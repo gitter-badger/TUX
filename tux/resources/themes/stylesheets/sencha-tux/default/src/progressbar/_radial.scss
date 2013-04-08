@@ -1,0 +1,165 @@
+/**
+ * @class Ext.tux.progressbar.Radial
+ */
+
+/**
+ * @var {color} $radial-progressbar-color
+ * Default color used by Radial ProgressBars components.
+ */
+$radial-progressbar-color: $base-color !default;
+
+/**
+ * @var {measurement} $radial-progressbar-margin
+ * Default margin used by Radial ProgressBars components.
+ */
+$radial-progressbar-margin: 5px !default;
+
+/**
+ * @var {list} $radial-progressbar-allowed-scales
+ * Allowed scales for Radial ProgressBar components.
+ */
+$radial-progressbar-allowed-scales: small medium large;
+
+/**
+ * Includes defaults Radial ProgressBar styles.
+ */
+@mixin sencha-tux-radial-progressbar($scale) {
+	
+	// Default size for "medium" scale
+	$size: 200px;
+	
+	// Calculate the requested scale size in px
+	@if $scale == 'small' {
+	    $size: 80px;
+	} @else if $scale == 'large' {
+        $size: 300px;
+    }
+
+	.x-radial-progressbar.x-#{$scale} {
+
+	    @include display-box;
+	    @include box-pack(center);
+	    @include box-align(center);
+
+	    position: relative;
+	    width: $size;
+	    height: $size;
+	    margin: $radial-progressbar-margin;
+
+	    &.x-floating {
+	        position: absolute !important;
+	    }
+
+	    .x-progress-inner, .x-progress-inner .x-slice, .x-progress-inner .x-slice div {
+
+	        @include border-radius($size / 2);
+
+	        position: absolute;
+	        width: $size - ($radial-progressbar-margin * 2);
+	        height: $size - ($radial-progressbar-margin * 2);
+
+	    }
+
+	    .x-progress-inner {
+
+	        margin: $radial-progressbar-margin;
+	        background-color: transparent;
+
+	        .x-slice {
+
+	            &.x-half {
+
+	                clip: rect(0px, $size, $size, $size / 2 - $radial-progressbar-margin);
+
+	                div {
+	                    @include rotateZ(0deg);
+	                    clip: rect(0px, $size / 2 - $radial-progressbar-margin, $size, 0);
+	                }                
+
+	            }
+
+	            &.x-end {
+
+	                clip: rect(0px, $size / 2 - $radial-progressbar-margin, $size, 0);
+
+	                div {
+	                    @include rotateZ(180deg);
+	                    clip: rect(0px, $size / 2 - $radial-progressbar-margin , $size, 0);
+	                }
+
+	            }
+
+	            div {
+	                border: solid 35px $radial-progressbar-color;
+	            }
+
+	        }
+
+	    }
+
+	    .x-progress-value {
+
+	        @include ellipsis;
+
+	        width: 50%;
+	        color: $radial-progressbar-color;
+	        font-family: 'Arial';
+	        font-weight: bold;
+	        font-size: 2.5em;
+	        text-align: center;
+
+	         &.x-hidden {
+	            display: none;
+	        }
+
+	    }
+
+	    &.x-animated {
+	        .x-progress-value {
+                @include transition(color 1000ms ease-in-out 0ms);
+	        }
+	    }
+
+	}
+
+}
+
+// Include the allowed progressbar scales styles
+@each $scale in $radial-progressbar-allowed-scales {
+    @include sencha-tux-radial-progressbar($scale);
+}
+
+/**
+ * Creates a theme UI for the Radial ProgressBar component.
+ *
+ *     // SCSS
+ *     @include sencha-radial-progressbar-ui('green', #468f59);
+ *
+ *     // JS
+ *     var progressbar = new Ext.tux.progressbar.Radial({value: 50, ui: 'green'})
+ *
+ * @param {string} $ui-label The name of the UI being created.
+ *   Can not included spaces or special punctuation (used in class names)
+ * @param {color} $color Base color for the UI.
+ */
+@mixin sencha-radial-progressbar-ui($ui-label, $color) {
+
+    .x-radial-progressbar.x-radial-progressbar-#{$ui-label} {
+        .x-progress-inner .x-slice div {
+            border: solid 35px $color;
+        }
+        .x-progress-value {
+            color: $color;
+        }
+    }
+
+}
+
+@mixin sencha-progressbar-mask($name){
+    .x-radial-progressbar.x-image-mask.#{$name} {
+        .x-progress-inner {
+	        -webkit-mask-size: 100%;
+	        -webkit-mask-image: url($tux-images + '/radial-progressbar/masks/' + $name + ".png");
+	    }
+	}
+}

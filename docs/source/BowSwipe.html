@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-event-recognizer-BowSwipe'>/**
+</span> * @class Ext.tux.event.recognizer.BowSwipe
+ * @extend Ext.event.recognizer.Swipe
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @private
+ * 
+ * A event recognizer created to recognize bow swipe movements.
+ * 
+ * This is disabled by default in Sencha Touch as it has a performance impact when your application
+ * has vertical scrollers, plus, in most cases it is not very useful.
+ * 
+ * If you wish to recognize bow swipe movements in your application, please refer to the documentation of
+ * {@link Ext.event.recognizer.Recognizer} and {@link Ext#setup}.
+ * 
+ */
+Ext.define('Ext.tux.event.recognizer.BowSwipe', {
+    extend: 'Ext.event.recognizer.Swipe',
+
+<span id='Ext-tux-event-recognizer-BowSwipe-property-handledEvents'>    handledEvents: ['bowswipe'],
+</span>
+    inheritableStatics: {
+<span id='Ext-tux-event-recognizer-BowSwipe-property-DEGREES_NOT_ENOUGH'>        DEGREES_NOT_ENOUGH: 0x13
+</span>    },
+
+    config: {
+<span id='Ext-tux-event-recognizer-BowSwipe-cfg-minDegrees'>        minDegrees: 40
+</span>    },
+
+<span id='Ext-tux-event-recognizer-BowSwipe-method-onTouchStart'>    onTouchStart: function(e) {
+</span>    
+        if (this.callParent(arguments) === false) {
+            return false;
+        }
+
+        var touch = e.changedTouches[0];
+
+        this.startTime = e.time;
+
+        this.startX = touch.pageX;
+        this.startY = touch.pageY;
+
+    },
+
+<span id='Ext-tux-event-recognizer-BowSwipe-method-onTouchMove'>    onTouchMove: function(e) {
+</span>    
+        var touch = e.changedTouches[0],
+            x = touch.pageX,
+            y = touch.pageY,
+            absDeltaX = Math.abs(x - this.startX),
+            absDeltaY = Math.abs(y - this.startY),
+            maxDuration = this.getMaxDuration(),
+            maxOffset = this.getMaxOffset(),
+            time = e.time;
+
+        if (time - this.startTime &gt; maxDuration) {
+            return this.fail(this.self.MAX_DURATION_EXCEEDED);
+        }
+
+    },
+
+<span id='Ext-tux-event-recognizer-BowSwipe-method-onTouchEnd'>    onTouchEnd: function(e) {
+</span>
+        if (this.onTouchMove(e) !== false) {
+            var touch = e.changedTouches[0],
+                x = touch.pageX,
+                y = touch.pageY,
+                deltaX = x - this.startX,
+                deltaY = y - this.startY,
+                duration = e.time - this.startTime,
+                minDegrees = this.getMinDegrees(),
+                v1, v2, tmpVangleRad, angleDeg, direction;
+
+            direction = {
+	            horizontal: (deltaX &lt; 0) ? 'left' : 'right',
+	            vertical: (deltaY &lt; 0) ? 'up' : 'down'
+            }; 
+
+            v1 = { x: this.startX, y: this.startY };
+            v2 = { x: x, y: y };
+
+            angleRad = Math.acos((v1.x*v2.x + v1.y*v2.y) / (Math.sqrt(v1.x*v1.x + v1.y*v1.y) * Math.sqrt(v2.x*v2.x + v2.y*v2.y)));
+            angleDeg = angleRad * 180 / Math.PI;
+
+            if(angleDeg &lt; minDegrees){
+                return this.fail(this.self.DEGREES_NOT_ENOUGH);
+            }
+
+           this.fire('bowswipe', e, [touch], {
+                touch: touch,
+                direction: direction,
+                duration: duration,
+                radiants: angleDeg,
+                degrees: angleDeg
+            });
+
+        }
+    }
+});
+</pre>
+</body>
+</html>

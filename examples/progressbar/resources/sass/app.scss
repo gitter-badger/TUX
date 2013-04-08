@@ -1,0 +1,33 @@
+$base-color: #299cda;
+
+@import 'sencha-touch/base';
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+@import 'sencha-tux/base';
+@import 'sencha-tux/default';
+@import 'sencha-tux/default/all';
+
+// Definition of the custom ProgressBar UI
+@include sencha-progressbar-ui('orange', #f1a165, true);
+@include sencha-progressbar-ui('green', #468f59, true);
+@include sencha-progressbar-ui('black', #393939, true);
+@include sencha-progressbar-ui('red', #d76b6b, true);
+@include sencha-progressbar-ui('white', #f8f8f8, true);
+
+// Include icons
+@include icon('screens');
+@include icon('minus2');
+@include icon('warning_black');
+@include icon('list');
+@include icon('forbidden');
+@include icon('refresh2');
+@include icon('info');
+
+// Define the messages view styles
+.x-messages-view {
+	.x-button {
+		margin-top: 10px;
+	    height: 50px;	
+	}
+}

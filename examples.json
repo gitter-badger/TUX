@@ -1,0 +1,140 @@
+[
+    {
+        "title": "ProgressBar",
+        "items": [
+            {
+                "name": "progressbar-containers",
+                "title": "Container Item",
+                "description": "Simple application which display some ProgressBar components inserted into a Container.",
+                "url": "/progressbar/index.html#containers",
+                "icon": "/progressbar/doc-icons/containers.png"
+            },
+            {
+                "name": "progressbar-toolbars",
+                "title": "Toolbar Docked",
+                "description": "Simple example application which show some ProgressBar components docked in different Toolbars.",
+                "url": "/progressbar/index.html#toolbars",
+                "icon": "/progressbar/doc-icons/toolbars.png"
+             },
+             {
+                "name": "progressbar-messagebox",
+                "title": "MessageBox",
+                "description": "Simple application which showcase how to use the new Progress MessageBox.",
+                "url": "/progressbar/index.html#messagebox",
+                "icon": "/progressbar/doc-icons/messagebox.png"
+            }
+        ]
+    },
+    {
+        "title": "Radial ProgressBar",
+        "items": [
+            {
+                "name": "radial-progressbar-meteo",
+                "title": "Meteo",
+                "description": "Simple application which show how to use the Radial ProgressBar to display meteo forecasts.",
+                "url": "/radial-progressbar/index.html#meteo",
+                "icon": "/radial-progressbar/doc-icons/meteo.png"
+            },
+            {
+                "name": "radial-progressbar-audio",
+                "title": "Audio",
+                "description": "Simple example which show how to control an audio file and display its informations changing also the dunut config.",
+                "url": "/radial-progressbar/index.html#audio",
+                "icon": "/radial-progressbar/doc-icons/audio.png"
+            },
+            {
+                "name": "radial-progressbar-mask",
+                "title": "Masking",
+                "description": "Small example which show how to customize the look of the progressbar using a mask image.",
+                "url": "/radial-progressbar/index.html#mask",
+                "icon": "/radial-progressbar/doc-icons/mask.png"
+            }
+        ]
+    },
+    {
+        "title": "Audio Track",
+        "items": [
+            {
+                "name": "audio-track-playlist",
+                "title": "Playlist",
+                "description": "Simple music playlist application which show how to use the AudioTrack component.",
+                "url": "/playlist/index.html",
+                "icon": "/playlist/doc-icons/playlist.png"
+            }
+        ]
+    },
+    {
+        "title": "Editable List",
+        "items": [
+             {
+                "name": "editable-list-single-mode",
+                "title": "Single Edit Mode",
+                "description": "Simple application which shows the EditableList single editable mode in action.",
+                "url": "/editable-list/index.html#singleedit",
+                "icon": "/editable-list/doc-icons/singleedit.png"
+             },
+             {
+                "name": "editable-list-multi-mode",
+                "title": "Multi Edit Mode",
+                "description": "Simple application which shows the EditableList multi editable mode in action.",
+                "url": "/editable-list/index.html#multiedit",
+                "icon": "/editable-list/doc-icons/multiedit.png"
+             },
+             {
+                "name": "components",
+                "title": "Custom Dataview Components",
+                "description": "This application shows how is possible to use custom editable components.",
+                "url": "/editable-list/index.html#components",
+                "icon": "/editable-list/doc-icons/components.png"
+              }
+        ]
+    },
+    {
+        "title": "Big Components",
+        "items": [
+            {
+                "name": "gallery",
+                "title": "Photo Gallery",
+                "description": "Small application which show the brand new Gallery component in action.",
+                "url": "/gallery/index.html",
+                "icon": "/gallery/doc-icons/gallery.png"
+            }
+        ]
+    },
+    {
+        "title": "Form Fields",
+        "items": [
+             {
+                "name": "progressbar-form",
+                "title": "ProgressBar",
+                "description": "Simple example application which show some ProgressBar form fields in action. ",
+                "url": "/progressbar/index.html#form",
+                "icon": "/progressbar/doc-icons/form.png"
+             }
+        ]
+    },
+    {
+        "title": "Layouts",
+        "items": [
+            {
+                "name": "orb-layout",
+                "title": "Orb Layout",
+                "description": "Small application which show how to arrange container items around a circle using the Orb layout",
+                "url": "/layouts/index.html#orb",
+                "icon": "/layouts/doc-icons/orb.png"
+            }
+        ]
+    },
+    {
+        "title": "Plugins",
+        "items": [
+            {
+                "name": "touch-timeout",
+                "title": "Touch Timeout",
+                "description": "Simple application which show the TouchTimeout Plugin in action and how it's possible to binf it to any component.",
+                "url": "/gestures/index.html#touchtimeout",
+                "icon": "/gestures/doc-icons/touch-timeout.png"
+            }
+        ]
+    }
+]

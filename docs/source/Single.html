@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-dataview-component-editable-Single'>/**
+</span> * @class Ext.tux.dataview.component.editable.Single
+ * @extend Ext.tux.dataview.component.editable.Abstract
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @aside example editable-list-single-mode
+ */
+Ext.define('Ext.tux.dataview.component.editable.Single', {
+    extend: 'Ext.tux.dataview.component.editable.Abstract',
+    requires: ['Ext.Button'],
+    xtype: 'singleeditablelistitem',
+
+    cachedConfig: {
+    
+<span id='Ext-tux-dataview-component-editable-Single-cfg-selectedCls'>        /**
+</span>         * @cfg {String} selectedCls
+         * The CSS class applied to the deleteIcon
+         * when this list item has been marked as editable selected.
+         */
+        selectedCls: 'x-selected'
+    
+    },
+
+    config: {
+
+<span id='Ext-tux-dataview-component-editable-Single-cfg-deleteIcon'>        /**
+</span>         * @cfg {Ext.Component} deleteIcon
+         * The component which emulate the delete icon
+         * which is shown on the left of the list item and that,
+         * when pressed, will show the delete button.
+         */
+        deleteIcon: {
+            cls: 'x-list-delete-icon',
+            hidden: true,
+            showAnimation: {
+                type: 'slideIn',
+                direction: 'right'
+            },
+            hideAnimation: {
+                type: 'slideOut',
+                direction: 'left'
+            }
+        },
+        
+<span id='Ext-tux-dataview-component-editable-Single-cfg-deleteButton'>        /**
+</span>         * @cfg {Ext.Button} deleteButton
+         * The button which allows to delete this
+         * list item associated record from the bounded store.
+         */
+        deleteButton: {
+            cls: 'x-delete-button',
+            ui: 'delete',
+            text: 'Delete',
+            hidden: true,
+            showAnimation: {
+                type: 'slideIn',
+                direction: 'left'
+            },
+            hideAnimation: {
+                type: 'slideOut',
+                direction: 'right'
+            }
+        }
+    
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-applyDeleteIcon'>    // @private
+</span>    applyDeleteIcon: function(icon){
+    
+        if(icon &amp;&amp; !icon.isComponent){
+            icon = Ext.factory(icon, Ext.Component, this.getDeleteIcon());
+        }
+
+        return icon;
+
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-updateDeleteIcon'>    // @private
+</span>    updateDeleteIcon: function(icon, oldIcon){
+    
+        if(icon){
+            icon.element.on('tap', 'onIconTap', this);
+            this.insert(0, icon);
+        }
+        else if (oldIcon){
+            oldIcon.destroy();
+        }
+
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-applyDeleteButton'>    // @private
+</span>    applyDeleteButton: function(button){
+    
+        if(button &amp;&amp; !button.isComponent){
+            button = Ext.factory(button, Ext.Button, this.getDeleteButton());
+        }
+
+        return button;
+
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-updateDeleteButton'>    // @private
+</span>    updateDeleteButton: function(button, oldButton){
+    
+        if(button){
+            button.on('tap', 'onDeleteTap', this);
+            this.add(button);
+        }
+        else if (oldButton){
+            oldButton.destroy();
+        }
+
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-onIconTap'>    onIconTap: function(){
+</span>    
+        var me = this,
+            element = me.getDeleteIcon().element,
+            cls = me.getSelectedCls(),
+            selected;
+
+        element.toggleCls(cls);
+        selected = element.hasCls(cls);
+        me.getDeleteButton()[selected ? 'show' : 'hide']();
+        me.dataview[selected ? 'selectItem' : 'deselectItem'](me);
+
+        if(selected){
+            me.toggleSelectedItem();
+        }
+
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-onDeleteTap'>    onDeleteTap: function(button){
+</span>        this.dataview.onDelete();
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-toggleSelectedItem'>    toggleSelectedItem: function(){
+</span>    
+        var me = this,
+            dataview = me.dataview,
+            selection = dataview.editSelection,
+            selectedItem = dataview.selectedItem;
+    
+        if(selectedItem){
+            selectedItem.deselect(true);
+            selection.clear();
+        }
+
+        me.dataview.selectedItem = me;
+        selection.add(me.getRecord());
+    
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-edit'>    edit: function(){
+</span>        this.getDeleteIcon().show();
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-cancelEdit'>    cancelEdit: function(){
+</span>    
+        this.getDeleteIcon().hide();
+        this.getDeleteButton().hide();
+
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-select'>    select: function(animated){
+</span>        
+        this.getDeleteIcon().element.addCls(this.getSelectedCls());
+        this.getDeleteButton().show(animated ? undefined : false);
+    
+    },
+
+<span id='Ext-tux-dataview-component-editable-Single-method-deselect'>    deselect: function(animated){
+</span>    
+        this.getDeleteIcon().element.removeCls(this.getSelectedCls());
+        this.getDeleteButton().hide(animated ? undefined : false);
+    
+    }
+    
+});
+</pre>
+</body>
+</html>

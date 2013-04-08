@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-layout-Stack'>/**
+</span> * @class Ext.tux.layout.Stack
+ * @extend Ext.layout.Default
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @private
+ */
+Ext.define('Ext.tux.layout.Stack', {
+    extend: 'Ext.layout.Default',
+    alias: 'layout.stack',
+<span id='Ext-tux-layout-Stack-property-layoutClass'>    layoutClass: 'x-layout-stack',
+</span><span id='Ext-tux-layout-Stack-property-itemClass'>    itemClass: 'x-layout-stack-item',
+</span>
+    config: {
+    
+<span id='Ext-tux-layout-Stack-cfg-maxRotation'>        /**
+</span>         * @cfg {Number} maxRotation
+         * The max rotation degrees to randomly apply
+         * to the inner elements.
+         */
+        maxRotation: 10,
+
+<span id='Ext-tux-layout-Stack-cfg-maxVisibleItems'>        /**
+</span>         * @cfg {Number} maxVisibleItems
+         * The max visible items to show.
+         * This will improve the layout performances.
+         */
+        maxVisibleItems: 3
+    
+    },
+
+<span id='Ext-tux-layout-Stack-method-setContainer'>    // @private
+</span>    setContainer: function(container) {
+    
+        this.callSuper(arguments);
+        container.innerElement.addCls(this.layoutClass);
+
+    },
+
+<span id='Ext-tux-layout-Stack-method-updateMaxVisibleItems'>    // @private
+</span>    updateMaxVisibleItems: function(value, oldValue){
+        this.refreshItems();
+    },
+
+<span id='Ext-tux-layout-Stack-method-updateMaxRotation'>    // @private
+</span>    updateMaxRotation: function(value, oldValue){
+        this.refreshItems();
+    },
+
+<span id='Ext-tux-layout-Stack-method-onItemInnerStateChange'>    // @private
+</span>    onItemInnerStateChange: function(item, isInner, destroying) {
+        
+        this.callSuper(arguments);
+        this.initItem(item, isInner);
+    
+    },
+
+<span id='Ext-tux-layout-Stack-method-initItem'>    // @pritvate
+</span>    initItem: function(item, isInner, index){
+    
+        var me = this,
+            rnd = Math.random,
+            maxRotation = me.getMaxRotation(),
+            maxVisibleItems = me.getMaxVisibleItems(),
+            direction = (rnd() * 100) &lt; 50 ? -1 : 1,
+            rotation = isInner ? ((rnd() * maxRotation) * direction) : 0,
+            container = me.container;
+
+        index = index !== undefined ? index : container.innerItems.length;
+
+        item.toggleCls(me.itemClass, isInner);
+        item.setLayoutSizeFlags(isInner ? container.LAYOUT_BOTH : 0);
+        
+        item.element.applyStyles({
+            '-webkit-transform': Ext.String.format('rotateZ({0}deg)', rotation)
+        });
+
+        item[index &gt; maxVisibleItems ? 'hide' : 'show']();
+    
+    },
+
+<span id='Ext-tux-layout-Stack-method-refreshItems'>    /**
+</span>     * Update the inner items position to refresh
+     * their position.
+     * @private
+     */
+    refreshItems: function(){
+    
+        var me = this,
+            container = me.container,
+            items = container.innerItems;
+
+        Ext.each(items, function(item, index){
+            me.initItem(item, true, ++index);
+        });
+        
+    }
+    
+});
+</pre>
+</body>
+</html>

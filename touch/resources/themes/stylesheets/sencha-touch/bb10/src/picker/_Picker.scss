@@ -1,0 +1,15 @@
+.x-picker {
+	background: #fff;
+}
+
+.x-picker-slot {
+	border-right: 1px solid #ddd;
+
+	&.x-last {
+		border-right: 0;
+	}
+}
+
+.x-picker-item {
+	padding: 0 5px;
+}

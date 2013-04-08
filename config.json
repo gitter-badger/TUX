@@ -1,0 +1,16 @@
+{
+    "--title": "Sencha TUX Documentation",
+    "--images": "docs-assets",
+    "--warnings": ["-link", "-no_doc"],
+    "--ignore-global": true,
+    "--output": "docs",
+    "--examples-base-url": "../examples",
+    "--categories": "categories.json",
+    "--examples": "examples.json",
+    "--external": [
+        "XMLHttpRequest"
+    ],
+    "--": [
+        "tux"
+    ]
+}

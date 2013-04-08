@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-dataview-component-editable-Multi'>/**
+</span> * @class Ext.tux.dataview.component.editable.Multi
+ * @extend Ext.tux.dataview.component.editable.Abstract
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @aside example editable-list-single-mode
+ * @aside example components
+ */
+Ext.define('Ext.tux.dataview.component.editable.Multi', {
+    extend: 'Ext.tux.dataview.component.editable.Abstract',
+    xtype: 'multieditablelistitem',
+
+    cachedConfig: {
+    
+<span id='Ext-tux-dataview-component-editable-Multi-cfg-checkedCls'>        /**
+</span>         * @cfg {String} checkedCls
+         * The CSS class applied to the checkbox
+         * when this list item has been checked.
+         */
+        checkedCls: 'x-checked'
+    
+    },
+
+    config: {
+    
+<span id='Ext-tux-dataview-component-editable-Multi-cfg-checkbox'>        /**
+</span>         * @cfg {Ext.Component} checkbox
+         * The component which emulate the selection checkbox
+         * which allows users to mask a list item as selected or deselected.
+         */
+        checkbox: {
+            cls: 'x-list-checkbox',
+            hidden: true,
+            showAnimation: {
+                type: 'slideIn',
+                direction: 'right'
+            },
+            hideAnimation: {
+                type: 'slideOut',
+                direction: 'left'
+            }
+        }
+    
+    },
+
+<span id='Ext-tux-dataview-component-editable-Multi-property-isMultiEdit'>    isMultiEdit: true,
+</span>
+<span id='Ext-tux-dataview-component-editable-Multi-method-applyCheckbox'>    // @private
+</span>    applyCheckbox: function(checkbox){
+    
+        if(checkbox &amp;&amp; !checkbox.isComponent){
+            checkbox = Ext.factory(checkbox, Ext.Component, this.getCheckbox());
+        }
+
+        return checkbox;
+
+    },
+
+<span id='Ext-tux-dataview-component-editable-Multi-method-updateCheckbox'>    // @private
+</span>    updateCheckbox: function(checkbox, oldCheckbox){
+    
+        if(checkbox){
+            checkbox.element.on('tap', 'onCheckBoxTap', this);
+            this.insert(0, checkbox);
+        }
+        else if (oldCheckbox){
+            oldCheckbox.destroy();
+        }
+
+    },
+
+<span id='Ext-tux-dataview-component-editable-Multi-method-onCheckBoxTap'>    // @private
+</span>    onCheckBoxTap: function(){
+    
+        var me = this,
+            element = me.getCheckbox().element,
+            record = me.getRecord(),
+            cls = me.getCheckedCls();
+
+        element.toggleCls(cls);
+        me.dataview[element.hasCls(cls) ? 'selectItem' : 'deselectItem'](me);
+    
+    },
+
+<span id='Ext-tux-dataview-component-editable-Multi-method-edit'>    // @private
+</span>    edit: function(start){
+        this.getCheckbox().show();
+    },
+    
+<span id='Ext-tux-dataview-component-editable-Multi-method-cancelEdit'>    cancelEdit: function(){
+</span>        this.getCheckbox().hide();
+    },
+
+<span id='Ext-tux-dataview-component-editable-Multi-method-select'>    select: function(){
+</span>        this.getCheckbox().element.addCls(this.getCheckedCls());
+    },
+
+<span id='Ext-tux-dataview-component-editable-Multi-method-deselect'>    deselect: function(){
+</span>        this.getCheckbox().element.removeCls(this.getCheckedCls());
+    }
+
+});
+</pre>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-AudioTrack'>/**
+</span> * @class Ext.tux.AudioTrack
+ * @extend Ext.Audio
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @aside example audio-track-playlist
+ */
+Ext.define('Ext.tux.AudioTrack', {
+    extend: 'Ext.Audio',
+    xtype: 'audiotrack',
+    requires: [
+        'Ext.tux.progressbar.Radial',
+        'Ext.Button'
+    ],
+
+    eventedConfig: {
+
+<span id='Ext-tux-AudioTrack-cfg-flipped'>        /**
+</span>         * @cfg {Boolean} flipped
+         * False to display the front face which contains the audio track cover art,
+         * otherwise true to display the progressbar face on the front one.
+         * @accessor
+         * @evented
+         */
+        flipped: false
+    
+    },
+
+    cachedConfig: {
+
+<span id='Ext-tux-AudioTrack-cfg-baseCls'>        /**
+</span>         * @cfg {String} baseCls
+         * @inheritdoc Ext.Component#baseCls
+         */
+        baseCls: Ext.baseCSSPrefix + 'audiotrack',
+
+<span id='Ext-tux-AudioTrack-cfg-enableControls'>        /**
+</span>         * @cfg enableControls
+         * Hide the default browser controls because we are going
+         * to provide a custom UI to control the audio file.
+         * @accessor
+         */
+        enableControls: false
+    
+    },
+
+    config: {
+    
+<span id='Ext-tux-AudioTrack-cfg-coverUrl'>        /**
+</span>         * @cfg coverUrl
+         * The url of the picture used as the cover of the audio file.
+         * @accessor
+         */
+        coverArtUrl: null,
+
+<span id='Ext-tux-AudioTrack-cfg-stopButton'>        /**
+</span>         * @cfg {Object} stopButton
+         * The configuration for the stop button.
+         */
+        stopButton: {
+            iconMask: true,
+            iconCls: 'none'
+        },
+
+<span id='Ext-tux-AudioTrack-cfg-progressBar'>        /**
+</span>         * @cfg {Object} progressBar
+         * The radial progressbar configuration.
+         */
+        progressBar: {
+            showValue: false,
+            scale: 'small'
+        }
+
+    },
+
+<span id='Ext-tux-AudioTrack-method-getElementConfig'>    // @private
+</span>    getElementConfig: function() {
+    
+        var config = this.callParent();
+
+        config.children.push({
+            cls: Ext.baseCSSPrefix + 'flip-card',
+            reference: 'cardElement',
+            children: [
+                {
+                    classList: ['x-face','x-front'],
+                    reference: 'coverElement'
+                },
+                {
+                    classList: ['x-face','x-back'],
+                    reference: 'progressbarElement'
+                }
+            ]
+        });
+    
+        return config;
+    
+    },
+
+<span id='Ext-tux-AudioTrack-method-initialize'>    /**
+</span>     * Component initialization function.
+     * @private
+     */
+    initialize: function(){
+
+        var me = this;
+
+        me.on('ended', Ext.bind(me.setFlipped, me, [false]));
+        me.coverElement.on('tap', Ext.bind(me.setFlipped, me, [true]));
+
+        me.callParent(arguments);
+    
+    },
+
+<span id='Ext-tux-AudioTrack-method-applyFlipped'>    /**
+</span>     * Flip the card to the front / back face after
+     * playing / stopping the audio file.
+     * @param {Boolean} flipped True to show the front cover face, otherwise
+     * will be shown the back progressbar one.
+     * @private
+     */
+    applyFlipped: function(flipped){
+
+        var me = this,
+            progressBar = me.getProgressBar();
+
+        if(me.rendered){
+
+            progressBar.setDuration(flipped ? me.getDuration() * 1000: 1000);
+            progressBar.setValue(flipped ? 100: 0);
+    
+            me[flipped ? 'play' : 'stop']();
+            me.cardElement.setStyle('-webkit-transform', Ext.String.format('rotateY({0}deg)', flipped ? 180 : 0));
+    
+        }
+
+        return flipped;
+
+    },
+
+<span id='Ext-tux-AudioTrack-method-applyStopButton'>    /**
+</span>     * Create the stop button and update the getStopButton reference.
+     * @param {Object} config The configuration used to create the button.
+     * @private
+     */
+    applyStopButton: function(config) {
+        return Ext.factory(config, Ext.Button, this.getStopButton());
+    },
+    
+<span id='Ext-tux-AudioTrack-method-updateStopButton'>    /**
+</span>     * Update the Stop button creating the new one and destroying
+     * the old one if any.
+     * @param {Ext.Button} newButton The new created button.
+     * @param {Ext.Button} oldButton The old button that eventually already exists.
+     * @private
+     */
+    updateStopButton: function(newButton, oldButton){
+
+        var me = this;        
+
+        if(newButton){
+            newButton.renderTo(me.progressbarElement);
+            newButton.on('tap', Ext.bind(me.setFlipped, me, [false]));
+        }
+        else if (oldButton) {
+            oldButton.destroy();
+        }
+        
+    },
+
+<span id='Ext-tux-AudioTrack-method-applyProgressBar'>    /**
+</span>     * Create the radial progressbar and update the getProgressBar reference.
+     * @param {Object} config The configuration used to create the progressbar.
+     * @private
+     */
+    applyProgressBar: function(config) {
+        return Ext.factory(config, Ext.tux.progressbar.Radial, this.getProgressBar());
+    },
+    
+<span id='Ext-tux-AudioTrack-method-updateProgressBar'>    /**
+</span>     * Update the ProgressBar creating the new one and destroying
+     * the old one if any.
+     * @param {Ext.tux.progressbar.Radial} newProgressBar The new created progressbar.
+     * @param {Ext.tux.progressbar.Radial} oldProgressBar The old progressbar that eventually already exists.
+     * @private
+     */
+    updateProgressBar: function(newProgressBar, oldProgressBar){
+    
+        if(newProgressBar) {
+            newProgressBar.renderTo(this.progressbarElement);
+        }
+        else if(oldProgressBar) {
+            oldProgressBar.destroy();
+        }
+        
+    },
+
+<span id='Ext-tux-AudioTrack-method-updateCoverArtUrl'>    /**
+</span>     * Update tha audio cover art Url.
+     * @param {String} value The new audiotrack cover art Url.
+     * @private
+     */
+    updateCoverArtUrl: function(value){
+        this.coverElement.setStyle('background', Ext.String.format('url({0})', value));
+    }
+
+});</pre>
+</body>
+</html>

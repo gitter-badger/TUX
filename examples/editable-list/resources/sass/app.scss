@@ -1,0 +1,24 @@
+$base-color: #299cda;
+
+@import 'sencha-touch/base';
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+@import 'sencha-tux/base';
+@import 'sencha-tux/default';
+@import 'sencha-tux/default/all';
+
+// Include pictos icons
+@include icon('list');
+@include icon('check');
+@include icon('more');
+
+// Define the custom styles for the Puppies list
+.x-puppies-list {
+	.x-img {
+	    margin: 10px;	
+	}
+	.x-progressbar {
+	    margin-right: 10px;
+	}
+}

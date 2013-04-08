@@ -1,0 +1,33 @@
+// Override the default color scheme
+$base-color: #55799e;
+$page-bg-color: #2d312e;
+
+@import 'sencha-touch/base';
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+@import 'sencha-tux/base';
+@import 'sencha-tux/default';
+@import 'sencha-tux/default/all';
+
+// Definition of the custom ProgressBar UI
+@include sencha-radial-progressbar-ui('white', #FFF);
+
+// Include pictos icons
+@include icon('time');
+@include icon('network');
+
+.x-touch-timeout-view {
+	.x-info-box {
+		
+		@include border-radius(10px);
+		padding: 20px;
+	    border: solid 5px #686868;
+	    color: rgba(255,255,255,.4);
+	    text-shadow: rgba(255,255,255,.2) 0 1px 0;
+	    font-weight: bold;
+	    text-align: center;
+	    line-height: 1.3em;
+	
+	}
+}

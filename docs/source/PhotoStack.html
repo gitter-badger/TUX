@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-dataview-gallery-component-PhotoStack'>/**
+</span> * @class Ext.tux.dataview.gallery.component.PhotoStack
+ * @extend Ext.dataview.component.DataItem
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @private
+ */
+Ext.define('Ext.tux.dataview.gallery.component.PhotoStack', {
+    extend: 'Ext.dataview.component.DataItem',
+    xtype: 'photostackdataitem',
+    requires: [
+        'Ext.Img',
+        'Ext.tux.layout.Stack'
+    ],
+
+    cachedConfig: {
+    
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-cfg-albumCls'>        /**
+</span>         * @cfg {String} albumCls
+         * The CSS class to apply to gallery albums.
+         */
+        albumCls: 'x-gallery-album',
+    
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-cfg-photoCls'>        /**
+</span>         * @cfg {String} photoCls
+         * The CSS class to apply to gallery photos.
+         */
+        photoCls: 'x-gallery-photo',
+
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-cfg-width'>        /**
+</span>         * @inheritdoc xt.dataview.component.DataItem#width
+         * @cfg {Number/String} width
+         */
+        width: 'auto'
+    
+    },
+
+    config: {
+        
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-cfg-cls'>        /**
+</span>         * @cfg {String} cls
+         * @inheritdoc Ext.Component#cls
+         */
+        cls: 'x-img-stack-data-item',
+
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-cfg-layout'>        /**
+</span>         * @cfg {Object} layout
+         * @inheritdoc Ext.Container#layout
+         */
+        layout: {
+            type: 'vbox'
+        },
+        
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-cfg-stack'>        /**
+</span>         * @cfg {Object} stack
+         * The stack container which will be used to contains
+         * all the album pictures.
+         */
+        stack: {
+            layout: 'stack',
+            cls: 'x-photo-stack',
+            defaultType: 'img'
+        },
+        
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-cfg-label'>        /**
+</span>         * @cfg {Object} label
+         * The Title component which will display
+         * the album name.
+         */
+        label: {
+            cls: 'x-label'
+        }
+
+    },
+
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-method-applyStack'>    // @private
+</span>    applyStack: function(config){
+        return Ext.factory(config, Ext.Container, this.getStack());
+    },
+
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-method-updateStack'>    // @private
+</span>    updateStack: function(stack, oldStack){
+
+        if(oldStack){
+            this.removeAt(0);
+        }
+    
+        if(stack){
+            this.insert(0, stack);
+        }
+    
+    },
+
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-method-applyLabel'>    // @private
+</span>    applyLabel: function(config){
+        return Ext.factory(config, Ext.Title, this.getLabel());
+    },
+
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-method-updateLabel'>    // @private
+</span>    updateLabel: function(label, oldLabel){
+    
+        if(oldLabel){
+            this.removeAt(1);
+        }
+    
+        if(label){
+            this.insert(1, label);
+        }
+    
+    },
+
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-method-updateRecord'>    // @private
+</span>    updateRecord: function(record, oldRecord){
+    
+        var stack = this.getStack(),
+            len = record.childNodes.length;
+
+        if(record){
+    
+            this.getLabel().setTitle(record.get('text') || '');
+
+            stack.removeAll(true);
+            stack.getLayout().setMaxRotation(len ? 10 : 0);
+
+            if(len){
+                record.eachChild(this.addPhoto, this, false);
+            }
+            else {
+                this.addPhoto(record);
+            }
+
+        }
+
+    },
+
+<span id='Ext-tux-dataview-gallery-component-PhotoStack-method-addPhoto'>    /**
+</span>     * Add a new Ext.Img component as item of the DataItem container
+     * associated to the album album or photo.
+     * @param {Ext.data.NodeInterface} record The record which contains
+     * all the album / photo informations.
+     * @private
+     */
+    addPhoto: function(record){
+    
+        var photoStack = this.getStack(),
+            cls = [record.get('leaf') ? this.getPhotoCls() : this.getAlbumCls()],
+            nodeCls = record.get('cls');
+    
+        if(nodeCls){
+            cls.push(nodeCls);
+        }
+    
+        photoStack.add({ 
+            cls: cls,
+            src: record.get('id') 
+        });
+
+    }
+
+});
+</pre>
+</body>
+</html>

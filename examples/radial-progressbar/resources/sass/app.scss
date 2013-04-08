@@ -1,0 +1,60 @@
+// Override the default color scheme
+$base-color: #299cda;
+$page-bg-color: #393838;
+
+@import 'sencha-touch/base';
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+@import 'sencha-tux/base';
+@import 'sencha-tux/default';
+@import 'sencha-tux/default/all';
+
+// Definition of the custom ProgressBar UI
+@include sencha-radial-progressbar-ui('cold', #34a4e0);
+@include sencha-radial-progressbar-ui('hot', #e33333);
+@include sencha-radial-progressbar-ui('alien', #5be668);
+@include sencha-radial-progressbar-ui('gold', #ffcc00);
+
+// Include the custom progressbar mask images
+@include sencha-progressbar-mask('pie');
+@include sencha-progressbar-mask('alien');
+@include sencha-progressbar-mask('wheel');
+@include sencha-progressbar-mask('world');
+
+// Definition of the custom Toolbar UI
+@include sencha-toolbar-ui('gray', #393838);
+
+// Definition of the custom TabBar UI
+@include sencha-tabbar-ui('gray', #393838, 'matte', #FFF);
+
+// Include pictos icons
+@include icon('cloud');
+@include icon('lightning');
+@include icon('volume');
+@include icon('volume_mute');
+@include icon('play');
+@include icon('stop');
+@include icon('browser');
+
+// Define the custom styles for the Meteo view
+.x-meteo-view {
+    .x-max-box {
+	    margin-left: 40px;
+	}
+    .x-info-box {
+        color: #949494;
+        width: 200px;
+		font-weight: bold;
+		text-shadow: 0 2px 1px black;
+		text-align: center;
+		margin-top: 10px;
+	}
+}
+
+// Define the custom styles for the Mask view
+.x-mask-view {
+	.x-input-text {
+	    text-align: center;	
+	}
+}

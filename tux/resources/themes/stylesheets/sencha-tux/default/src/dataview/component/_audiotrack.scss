@@ -1,0 +1,92 @@
+/**
+ * @class Ext.tux.AudioTrack
+ */
+
+/**
+ * @var {measurement} $audiotrack-size
+ * Default AudioTrack components size.
+ */
+$audiotrack-size: 80px !default;
+
+$audiotrack-button-size: ($audiotrack-size * 40) / 100;
+
+$audiotrack-button-icon-size: ($audiotrack-size * 15) / 100;
+
+.x-audiotrack {
+
+  margin: 5px;
+
+  .x-flip-card {
+
+      @include transform-style(preserve-3d);
+      @include transition(transform 1s);
+
+      width: $audiotrack-size;
+      height: $audiotrack-size;
+
+      &.x-flipped {
+          @include rotateY(180deg);
+      }
+
+      .x-face {
+
+          @include backface-visibility(hidden);
+
+          width: 100%;
+          height: 100%;
+
+          &.x-front {
+              position: absolute;
+              border: solid 1px #d4d4d4;
+              background-size: 100% 100% !important;
+          }
+
+          &.x-back {
+
+              @include display-box;
+              @include box-pack(center);
+              @include box-align(center);
+              @include rotateY(180deg);
+
+              .x-button {
+
+                  @include border-radius($audiotrack-size);
+                  min-height: $audiotrack-button-size;
+                  width: $audiotrack-button-size;
+                  height: $audiotrack-button-size;
+
+                  .x-button-icon {
+
+                      width: $audiotrack-button-icon-size;
+                      height: $audiotrack-button-icon-size;
+                      margin: 1px -3px;
+                      background: #4F4F4F;
+
+                  }
+
+              }
+
+          }
+
+      }
+
+  }
+
+  .x-radial-progressbar.x-small {
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 0;
+
+      .x-slice div {
+
+          border-width: 0 !important;
+          background-color: $base-color;
+
+      }
+
+  }
+
+}
+    

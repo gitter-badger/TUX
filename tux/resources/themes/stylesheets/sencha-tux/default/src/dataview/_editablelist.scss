@@ -1,0 +1,54 @@
+/**
+ * @class Ext.tux.dataview.EditableList
+ */
+
+.x-list-item-inner {
+
+    @include display-box;
+    @include box-align(center);
+
+    .x-list-item-body {
+	    @include box-flex(1);
+	}
+
+}
+
+.x-list-checkbox, .x-list-delete-icon {
+
+       margin-left: 5px;
+    width: 33px;
+    height: 33px;
+
+}
+
+.x-list-checkbox {
+
+    background: url($tux-images + '/unchecked.png') no-repeat;
+
+       &.x-checked {
+           background: url($tux-images + '/checked.png') no-repeat;
+       }
+
+}
+
+.x-list-delete-icon {
+
+	@include transition(-webkit-transform 200ms linear 0ms);
+
+    background: url($tux-images + '/delete.png') no-repeat;
+
+    &.x-selected {
+	    -webkit-transform: rotateZ(-90deg);
+	}
+
+}
+
+.x-delete-button {
+
+	margin-right: 5px;
+	width: 100px;
+    height: 30px;
+
+}
+
+@include sencha-button-ui('delete', #FF0000, 'glossy');

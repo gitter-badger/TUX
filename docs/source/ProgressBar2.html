@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-progressbar-ProgressBar'>/**
+</span> * @class Ext.tux.progressbar.ProgressBar
+ * @extend Ext.Component
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @aside example progressbar-containers
+ * @aside example progressbar-toolbars
+ */
+Ext.define('Ext.tux.progressbar.ProgressBar', {
+    alternateClassName: 'Ext.tux.ProgressBar',
+    extend: 'Ext.Component',
+    xtype: 'progressbar',
+
+<span id='Ext-tux-progressbar-ProgressBar-event-complete'>    /**
+</span>     * @event complete
+     * Fires when the progressbar percentual value reach 100%
+     * @param {Ext.tux.ProgressBar} this
+     */
+    
+    cachedConfig: {
+    
+<span id='Ext-tux-progressbar-ProgressBar-cfg-baseCls'>        /**
+</span>         * @cfg {String} baseCls
+         * The base CSS class to apply to this component's element.
+         * This will also be prepended to other elements within this component.
+         */
+        baseCls: Ext.baseCSSPrefix + 'progressbar',
+    
+<span id='Ext-tux-progressbar-ProgressBar-cfg-imageMaskCls'>        /**
+</span>         * @cfg {String} imageMaskCls
+         * @private
+         * The CSS class to add to the progressbar as allowed by {@link #imageMask}.
+         * @accessor
+         */
+        imageMaskCls: Ext.baseCSSPrefix + 'image-mask',
+
+<span id='Ext-tux-progressbar-ProgressBar-cfg-imageCls'>        /**
+</span>         * @cfg {String} imageCls
+         * Optional CSS class to add to the inner element. This is useful if you want to use a CSS
+         * background image to personalize the progressbar look.
+         * @accessor
+         */
+        imageCls: null
+    
+    },
+
+    config: {
+
+<span id='Ext-tux-progressbar-ProgressBar-cfg-animated'>        /**
+</span>         * @cfg {boolean} animated
+         * Tells the progressbar if the fill element brackground
+         * should be animated or not.
+         */
+        animated: true,
+
+<span id='Ext-tux-progressbar-ProgressBar-cfg-animateOnPaint'>        /**
+</span>         * @cfg {boolean} animateOnPaint
+         * Tells the progressbar if it needs to be immediately rendered
+         * with the value set, or if we want to bring it to the value
+         * using an animation.
+         */
+        animateOnPaint: true, 
+
+<span id='Ext-tux-progressbar-ProgressBar-cfg-duration'>        /**
+</span>         * @cfg {Number} duration
+         * The animation duration in milliseconds used to fill the progressbar
+         * with the new percent value.
+         */
+        duration: 2000,
+
+<span id='Ext-tux-progressbar-ProgressBar-cfg-message'>        /**
+</span>         * @cfg {String} message
+         * The message to display instead of the percent value.
+         */
+        message: null,
+
+<span id='Ext-tux-progressbar-ProgressBar-cfg-maxValue'>        /**
+</span>         * @cfg {Number} maxValue
+         * The maximum ProgressBar value.
+         */
+        maxValue: 100,
+
+<span id='Ext-tux-progressbar-ProgressBar-cfg-value'>        /**
+</span>         * @cfg {Number} value
+         * The current ProgressBar value.
+         */
+        value: 0,
+
+<span id='Ext-tux-progressbar-ProgressBar-cfg-imageMask'>        /**
+</span>         * @cfg {boolean} imageMask
+         * Whether or not to mask the progressbar with the maskCls configuration.
+         * This is needed if you want to use any of the bundled mask images.
+         */
+        imageMask: false,
+
+<span id='Ext-tux-progressbar-ProgressBar-cfg-showValue'>        /**
+</span>         * @cfg {boolean} showValue
+         * Whether or not to to show the progressbar value or message.
+         */
+        showValue: true
+
+    },        
+<span id='Ext-tux-progressbar-ProgressBar-property-template'>    template: [
+</span>        {
+            tag: 'span',
+            className: 'x-progress-value',
+            reference: 'messageElement'
+        },
+        {
+            tag: 'div',
+            className: 'x-progress-inner',
+            reference: 'innerElement'
+        }
+    ],
+
+<span id='Ext-tux-progressbar-ProgressBar-method-initialize'>    initialize: function(){
+</span>    
+        var me = this;
+
+        if(me.getAnimated() &amp;&amp; me.getAnimateOnPaint()){
+            me.on('painted', 'onPainted', me);
+        }
+    
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-onPainted'>    // @private
+</span>    onPainted: function(){
+
+        this.doUpdateValue();
+        this.un('painted', 'onPainted', this);
+    
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-update'>    /**
+</span>     * Update the progressbar with a new value
+     * and an information message.
+     * @param {Number} value The new value.
+     * @param {String} message The information message to show.
+     */
+    update: function(value, message){
+    
+        this.setMessage(message);
+        this.setValue(value);
+
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-updateValue'>    // @private
+</span>    updateValue: function(value){
+
+        if(this.getAnimateOnPaint() &amp;&amp; this.getAnimated() &amp;&amp; !this.isPainted()){
+            return;
+        }
+
+        this.doUpdateValue(value);
+
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-doUpdateValue'>    // @private
+</span>    doUpdateValue: function(value) {
+
+        var me = this,
+            value = value || me.getValue(),
+            duration = me.getDuration(),
+            maxValue = this.getMaxValue(),
+            message = me.getMessage(),
+            percent;
+
+        percent = me.getPercentValue(value);
+
+        if(duration &gt; 0){
+            me.runAnimation(percent, duration);
+        }
+        else {
+            me.innerElement.setStyle('width', percent + '%');
+        }
+
+        if(!message){
+            me.messageElement.setHtml(percent + '%');
+        }
+
+        me.checkComplete(percent);
+
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-getPercentValue'>    /**
+</span>     * Convert the value into a percentual number.
+     * @param {Number} value The number to be converted.
+     * @return {Number} The percentual value.
+     * @private
+     */
+    getPercentValue: function(value){
+    
+        var maxValue = this.getMaxValue();
+    
+        if (value &lt; 0) {
+            value = 0;
+        }
+        else if(value &gt; maxValue) {
+            value = maxValue;
+        }
+
+        return ((value * 100) / maxValue).toFixed();
+    
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-updateMessage'>    // @private
+</span>    updateMessage: function(value){
+        this.messageElement.setHtml(value);
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-updateAnimated'>    // @private
+</span>    updateAnimated: function(value){
+        this[value ? 'addCls' : 'removeCls']('x-animated');
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-updateImageCls'>    // @private
+</span>    updateImageCls: function(imageCls, oldImageCls){
+        this.replaceCls(oldImageCls, imageCls);
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-updateImageMask'>    // @private
+</span>    updateImageMask: function(imageMask){
+        this[imageMask ? 'addCls' : 'removeCls'](this.getImageMaskCls());
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-updateImageMaskCls'>    // @private
+</span>    updateImageMaskCls: function(maskCls, oldMaskCls){
+    
+        if (this.getImageMask()) {
+            this.replaceCls(oldMaskCls, maskCls);
+        }
+    
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-updateShowValue'>    // @private
+</span>    updateShowValue: function(value){
+        this.messageElement[value ? 'removeCls' : 'addCls']('x-hidden');
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-checkComplete'>    // @private
+</span>    checkComplete: function(percent){
+    
+        var me = this,
+            animated = me.getAnimated(),
+            duration = me.getDuration();
+
+	    if(me.timeout){
+            clearTimeout(me.timeout);
+            delete me.timeout;
+        }
+    
+        if(percent === 100){
+            me.timeout = setTimeout(function(){
+                me.onComplete();
+            }, animated ? duration : 0);
+        }
+    
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-onComplete'>    // @private
+</span>    onComplete: function(){
+        this.fireEvent('complete', this);
+    },
+
+<span id='Ext-tux-progressbar-ProgressBar-method-runAnimation'>    /**
+</span>     * Run the fill animation to simulate the progress.
+     * @param {Number} percent The new percentual fill value.
+     * @param {Number} duration The fill animation duration.
+     * @private
+     */
+    runAnimation: function(percent, duration){
+
+        this.innerElement.applyStyles({
+            '-webkit-transition': Ext.String.format('width {0}ms {1}', duration, 'ease-in-out'),
+            'width': percent + '%'
+        });
+
+    }
+    
+});
+</pre>
+</body>
+</html>

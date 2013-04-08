@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-MessageBox'>/**
+</span> * @class Ext.tux.MessageBox
+ * @extend Ext.MessageBox
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @aside example progressbar-messagebox
+ */
+Ext.define('Ext.tux.MessageBox', {
+    extend: 'Ext.MessageBox',
+    requires: ['Ext.tux.progressbar.ProgressBar'],
+    config: {
+    
+<span id='Ext-tux-MessageBox-cfg-progressBar'>        /**
+</span>         * @cfg {Object} progressBar
+         * The configuration to be passed if you want an {@link Ext.tux.ProgressBar}
+         * in your {@link Ext.tux.MessageBox}.
+         */
+        progressBar: null
+
+    },
+
+<span id='Ext-tux-MessageBox-method-constructor'>    constructor: function(config) {
+</span>    
+        this.callParent([config]);
+        this.defaultAllowedConfig['progressBar'] = this.defaultConfig['progressBar'];
+
+    },
+
+<span id='Ext-tux-MessageBox-method-progress'>    /**
+</span>     * Show a messagebox which also display an activity progressbar.
+     * @param {String} title The title bar text.
+     * @param {String} message The message box body text.
+     * @param {Function} fn A callback function which is called when the dialog is dismissed by clicking on the configured buttons.
+     * @param {String} fn.buttonId The `itemId` of the button pressed, in this case can be only 'cancel'.
+     * @param {String} fn.value Value of the input field if either `prompt` or `multiLine` option is `true`.
+     * @param {Object} fn.opt The config object passed to show.
+     * @param {Object} config The PorgressBar configuration.
+     * @param {Object} scope The scope (`this` reference) in which the callback is executed.
+     */
+    progress: function(title, message, config, fn, scope){
+    
+        var me = this,
+            cancelable = config.cancelable;
+
+        var message = me.show({
+            title: title || null,
+            message: message || null,
+            progressBar: config || {},
+            buttons: cancelable ? Ext.MessageBox.CANCEL : false,
+            scope: scope,
+            fn: function(){
+                if(fn){
+                    fn.apply(scope, arguments);
+                }
+            }
+        });
+
+        me.buttonsToolbar[cancelable ? 'show' : 'hide']();
+
+        return message;
+
+    },
+
+<span id='Ext-tux-MessageBox-method-applyProgressBar'>    // @private
+</span>    applyProgressBar: function(progressbar, oldProgressBar){
+        return Ext.factory(progressbar, Ext.tux.progressbar.ProgressBar, this.getProgressBar());
+    },
+
+<span id='Ext-tux-MessageBox-method-updateProgressBar'>    // @private
+</span>    updateProgressBar: function(newProgressBar, oldProgressBar){
+    
+        if(oldProgressBar) {
+            this.remove(oldProgressBar);
+        }
+
+        if(newProgressBar) {
+            this.add(newProgressBar);
+        }
+
+    }
+
+}, function(MessageBox){
+    
+    Ext.onSetup(function() {
+        
+        delete Ext.Msg;
+        Ext.Msg = new MessageBox;
+
+    });
+    
+});
+</pre>
+</body>
+</html>

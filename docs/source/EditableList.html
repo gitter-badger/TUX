@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-dataview-EditableList'>/**
+</span> * @class Ext.tux.dataview.EditableList
+ * @extend Ext.dataview.List
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @aside example editable-list-single-mode
+ * @aside example editable-list-multi-mode
+ * @aside example components
+ */
+Ext.define('Ext.tux.dataview.EditableList', {
+    alternateClassName: 'Ext.tux.EditableList',
+    extend: 'Ext.dataview.List',
+    xtype: 'editablelist',
+    requires: [
+        'Ext.TitleBar',
+        'Ext.Button',
+        'Ext.tux.dataview.component.editable.Multi',
+        'Ext.tux.dataview.component.editable.Single'
+    ],
+
+<span id='Ext-tux-dataview-EditableList-event-editselectionchange'>    /**
+</span>     * @event editselectionchange
+     * Fires when the edit selection changes.
+     * @param {Ext.tux.dataview.EditableList} this
+     * @param {Ext.data.Model[]} records The records whose edit selection has changed.
+     */
+
+<span id='Ext-tux-dataview-EditableList-event-delete'>    /**
+</span>     * @event delete
+     * Fires when some records has been deleted.
+     * @param {Ext.tux.dataview.EditableList} this
+     * @param {Ext.data.Model[]} records The deleted records.
+     */
+
+    cachedConfig: {
+	
+<span id='Ext-tux-dataview-EditableList-cfg-useComponents'>        /**
+</span>         * @cfg {Boolean} useComponents
+         * @inheritdoc Ext.dataview.DataView#useComponents
+         */
+        useComponents: true
+
+    },
+
+    config: {
+    
+<span id='Ext-tux-dataview-EditableList-cfg-defaultType'>        /**
+</span>         * @cfg {String} defaultType
+         * The xtype used for the component based editable List.
+         * Valid values are `'singleeditablelistitem'`, `'multieditablelistitem'`, or
+         * whatever editable list item which is an extension of
+         * {@link Ext.tux.dataview.component.editable.Abstract}.
+         */
+        defaultType: 'singleeditablelistitem',
+
+<span id='Ext-tux-dataview-EditableList-cfg-toolbar'>        /**
+</span>         * @cfg {Object / Ext.TitleBar} toolbar
+         * The top docked toolbar which contains the
+         * Edit and Delete buttons.
+         */
+        toolbar: {
+            docked: 'top'
+        },
+    
+<span id='Ext-tux-dataview-EditableList-cfg-editButton'>        /**
+</span>         * @cfg {Object / Ext.Button} editButton
+         * The Edit Button / configurations.
+         */
+        editButton: {
+            action: 'toggleedit',
+            text: 'Edit'
+        },
+    
+<span id='Ext-tux-dataview-EditableList-cfg-deleteButton'>        /**
+</span>         * @cfg {Object / Ext.Button} deleteButton
+         * The Delete Button / configurations.
+         */
+        deleteButton: {
+            action: 'delete',
+            ui: 'decline',
+            align: 'right',
+            iconMask: true,
+            iconCls: 'trash',
+            showAnimation: 'popIn',
+            hideAnimation: 'popOut',
+            hidden: true
+        }
+
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-constructor'>    // @private
+</span>    constructor: function() {
+        
+        var me = this,
+            defaultType, item;
+        
+        me.editSelection = new Ext.util.MixedCollection();
+        me.editSelection.on({
+            add: 'onSelectionChange',
+            remove: 'onSelectionChange',
+            scope: me
+        });
+
+        me.callParent(arguments);
+
+        defaultType = me.getDefaultType();
+
+        if(defaultType){
+    
+            item = Ext.factory({ xtype: defaultType });
+            if(!item.isEditable || !Ext.isDefined(item.isMultiEdit)){
+                Ext.Logger.error('The defaultType for EditableList must always be an editable item.');
+            }
+            me.isMultiEdit = item.isMultiEdit;
+
+        }
+
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-applyToolbar'>    // @private
+</span>    applyToolbar: function(toolbar){
+    
+        if(toolbar &amp;&amp; !toolbar.isComponent){
+            toolbar = Ext.factory(toolbar, Ext.TitleBar, this.getToolbar());
+        }
+
+        return toolbar;
+
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-updateToolbar'>    // @private
+</span>    updateToolbar: function(toolbar, oldToolbar){
+    
+        if(toolbar){
+            this.add(toolbar);
+        }
+        else if (oldToolbar){
+            oldToolbar.destroy();
+        }
+
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-applyEditButton'>    // @private
+</span>    applyEditButton: function(button){
+    
+        if(button &amp;&amp; !button.isComponent){
+            button = Ext.factory(button, Ext.Button, this.getEditButton());
+        }
+
+        return button;
+
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-updateEditButton'>    // @private
+</span>    updateEditButton: function(button, oldButton){
+    
+        var toolbar = this.getToolbar();
+
+        if(button){
+            button.on('tap', 'onToggleEdit', this);
+            toolbar.add(button);
+        }
+        else if (oldToolbar){
+            toolbar.remove(oldButton, true);
+        }
+
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-applyDeleteButton'>    // @private
+</span>    applyDeleteButton: function(button){
+    
+        if(button &amp;&amp; !button.isComponent){
+            button = Ext.factory(button, Ext.Button, this.getDeleteButton());
+        }
+
+        return button;
+
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-updateDeleteButton'>    // @private
+</span>    updateDeleteButton: function(button, oldButton){
+    
+        var toolbar = this.getToolbar();
+
+        if(button){
+            button.on('tap', 'onDelete', this);
+            toolbar.add(button);
+        }
+        else if (oldToolbar){
+            toolbar.remove(oldButton, true);
+        }
+
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-onToggleEdit'>    // @private
+</span>    onToggleEdit: function(btn){
+    
+        if(this.isEditing){
+            btn.setText('Edit');
+            this.runItemsAction('cancelEdit');
+            Ext.defer(this.clearEditableSelection, 500, this);
+        }
+        else {
+            btn.setText('Cancel');
+            this.runItemsAction('edit');
+        }
+    
+        this.isEditing = !this.isEditing;
+    
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-onDelete'>    // @private
+</span>    onDelete: function(btn){
+    
+        var me = this,
+            selection = me.editSelection,
+            records = selection.getRange();
+
+        me.getStore().remove(records);
+        selection.clear();
+        me.getDeleteButton().hide();
+    
+        me.fireEvent('delete', me, records);
+    
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-runItemsAction'>    // @private
+</span>    runItemsAction: function(action){
+    
+        Ext.each(this.listItems, function(item){
+            item[action]();
+        });
+    
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-updateListItem'>    // @private
+</span>    updateListItem: function(item, index, info) {
+    
+        var record = info.store.getAt(index);
+
+        if (this.isEditableSelected(record)) {
+            item.select();
+        }
+        else {
+            item.deselect();
+        }
+
+        this.callParent(arguments);
+    
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-clearEditableSelection'>    // @private
+</span>    clearEditableSelection: function(){
+    
+        this.runItemsAction('deselect');
+        this.editSelection.clear();
+    
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-isEditableSelected'>    // @private
+</span>    isEditableSelected: function(record){
+    
+        var record = Ext.isNumber(record) ? this.getStore().getAt(record) : record;
+        return this.editSelection.indexOf(record) !== -1;
+        
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-selectItem'>    // @private
+</span>    selectItem: function(item){
+        this.editSelection.add(item.getRecord());
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-deselectItem'>    // @private
+</span>    deselectItem: function(item){
+        this.editSelection.remove(item.getRecord());
+    },
+
+<span id='Ext-tux-dataview-EditableList-method-onSelectionChange'>    // @private
+</span>    onSelectionChange: function(){
+        
+        var me = this,
+            selection = me.editSelection,
+            count = selection.getCount(),
+            deleteButton = me.getDeleteButton(),
+            records = selection.getRange();
+
+        if(me.isMultiEdit){
+        
+            if(count &gt; 0){
+                deleteButton.show();
+                deleteButton.setText(count + ' Items');
+            }
+            else {
+                deleteButton.hide();
+            }
+        
+        }
+
+        me.fireEvent('editselectionchange', me, records);
+    
+    }
+
+});</pre>
+</body>
+</html>

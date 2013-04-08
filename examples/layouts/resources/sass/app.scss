@@ -1,0 +1,28 @@
+// Override the default color scheme
+$base-color: #535353;
+
+@import 'sencha-touch/base';
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+@import 'sencha-tux/base';
+@import 'sencha-tux/default';
+@import 'sencha-tux/default/all';
+
+// Definition of the custom Button UI
+@include sencha-button-ui('gray', #393838, 'matte');
+
+// Include pictos icons
+@include icon('cloud');
+@include icon('expand');
+@include icon('screens');
+
+.x-example-component {
+	
+	background-color: #439639;
+	color: #FFF;
+	font-weight: bold;
+	text-align: center;
+	padding: 15px 10px;
+	
+}

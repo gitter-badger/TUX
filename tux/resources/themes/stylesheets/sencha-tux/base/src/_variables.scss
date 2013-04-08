@@ -1,0 +1,11 @@
+/**
+ * @var {string} $tux-root-dir
+ * The absolute root directory where to found the TUX styles.
+ */
+$tux-root-dir: '/TUX/tux';
+
+/**
+ * @var {string} $tux-images
+ * The directory where to find all the tux images.
+ */
+$tux-images: $tux-root-dir + '/images';

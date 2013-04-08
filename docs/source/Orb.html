@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-layout-Orb'>/**
+</span> * @class Ext.tux.layout.Orb
+ * @extend Ext.layout.Abstract
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @aside example orb-layout
+ */
+Ext.define('Ext.tux.layout.Orb', {
+    extend: 'Ext.layout.Abstract',
+    alias: 'layout.orb',
+<span id='Ext-tux-layout-Orb-property-layoutClass'>    layoutClass: 'x-layout-orb',
+</span><span id='Ext-tux-layout-Orb-property-itemClass'>    itemClass: 'x-layout-orb-item',
+</span>
+    config: {
+        
+<span id='Ext-tux-layout-Orb-cfg-gravity'>        /**
+</span>         * @cfg {Number} gravity
+         * The gravity value used to attract the items to the center
+         * of the orb layout.
+         */
+        gravity: 200,
+        
+<span id='Ext-tux-layout-Orb-cfg-orient'>        /**
+</span>         * @cfg {Boolean} orient
+         * True to auto orient all the items to point to the center
+         * of the orb layout.
+         */
+        orient: true,
+
+<span id='Ext-tux-layout-Orb-cfg-animated'>        /**
+</span>         * @cfg {Boolean} animated
+         * True to enable layout's animations.
+         */
+        animated: false
+
+    },
+
+<span id='Ext-tux-layout-Orb-method-setContainer'>    // @private
+</span>    setContainer: function(container) {
+    
+        this.callSuper(arguments);
+
+        container.addCls(this.layoutClass);
+        container.onInitialized('onContainerInitialized', this);
+
+    },
+
+<span id='Ext-tux-layout-Orb-method-onContainerInitialized'>    // @private
+</span>    onContainerInitialized: function(container){
+        this.arrangeItems();
+    },
+
+<span id='Ext-tux-layout-Orb-method-onItemRemove'>    // @private
+</span>    onItemRemove: function(item) {
+    
+        this.removeInnerItem(item);
+        this.arrangeItems();
+
+    },
+
+<span id='Ext-tux-layout-Orb-method-onItemMove'>    // @private
+</span>    onItemMove: function(item) {
+        this.arrangeItems();
+    },
+
+<span id='Ext-tux-layout-Orb-method-onItemAdd'>    // @private
+</span>    onItemAdd: function(item){
+        
+        var me = this;
+        
+        me.insertInnerItem(item, me.container.innerIndexOf(item));
+        
+        item.addCls(me.itemClass);
+
+        if(me.container.initialized){
+            me.arrangeItems();
+        }
+        
+    },
+
+<span id='Ext-tux-layout-Orb-method-arrangeItems'>    // @private
+</span>    arrangeItems: function(center){
+
+        var me = this,
+            center = center || me.center,
+            items = me.container.items,
+            gravity = me.getGravity(),
+            angle = 0,
+            width, height, top, left;
+
+        items.each(function(item, index, length){
+    
+            width = item.getWidth() / 2;
+            height = item.getHeight() / 2;
+
+            top = (gravity * -Math.cos(angle)) - height;
+            left = (gravity * Math.sin(angle)) - width;
+
+            item.setTop(top);
+            item.setLeft(left);
+    
+            me.updateItemOrientation(item, index, length);
+    
+            angle += Math.PI * 2 / length;
+
+        });
+    
+        me.center = center;
+
+    },
+
+<span id='Ext-tux-layout-Orb-method-updateGravity'>    // @private
+</span>    updateGravity: function(value){
+        if(this.container.initialized){
+            this.arrangeItems();
+        }
+    },
+    
+<span id='Ext-tux-layout-Orb-method-updateOrient'>    // @private
+</span>    updateOrient: function(value){
+        if(this.container.initialized){
+            this.doUpdateOrient(value);
+        }
+    },
+    
+<span id='Ext-tux-layout-Orb-method-updateAnimated'>    // @private
+</span>    updateAnimated: function(value){
+        this.container[value ? 'addCls' : 'removeCls']('x-animated');
+    },
+
+<span id='Ext-tux-layout-Orb-method-doUpdateOrient'>    // @private
+</span>    doUpdateOrient: function(value){
+        this.container.items.each(this.updateItemOrientation, this);
+    },
+    
+<span id='Ext-tux-layout-Orb-method-updateItemOrientation'>    // @private
+</span>    updateItemOrientation: function(item, index, length){
+        
+        var orient = this.getOrient(),
+            rotation;
+        
+        if(orient){
+            rotation = 90 + (index * (360 / length));
+            if(rotation &gt; 180){
+                rotation = - (360 - rotation); 
+            }
+        }
+        
+        item.element.dom.style.webkitTransform = orient ? Ext.String.format('rotateZ({0}deg)', rotation) : '';
+
+    },
+    
+<span id='Ext-tux-layout-Orb-method-insertInnerItem'>    // @private
+</span>    insertInnerItem: function(item, index) {
+        
+       var container = this.container,
+            containerDom = container.innerElement.dom,
+            itemDom = item.element.dom,
+            nextSibling = container.getInnerAt(index + 1),
+            nextSiblingDom = nextSibling ? nextSibling.element.dom : null;
+
+        containerDom.insertBefore(itemDom, nextSiblingDom);
+
+        return this;
+
+    },
+
+<span id='Ext-tux-layout-Orb-method-removeInnerItem'>    // @private
+</span>    removeInnerItem: function(item) {
+        item.element.detach();
+    }
+
+});</pre>
+</body>
+</html>

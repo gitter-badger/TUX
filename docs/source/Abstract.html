@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-dataview-component-editable-Abstract'>/**
+</span> * @class Ext.tux.dataview.component.editable.Abstract
+ * @extend Ext.dataview.component.ListItem
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ */
+Ext.define('Ext.tux.dataview.component.editable.Abstract', {
+    extend: 'Ext.dataview.component.ListItem',
+
+<span id='Ext-tux-dataview-component-editable-Abstract-property-isEditable'>    isEditable: true,
+</span>
+<span id='Ext-tux-dataview-component-editable-Abstract-property-isMultiEdit'>    isMultiEdit: false,
+</span>
+<span id='Ext-tux-dataview-component-editable-Abstract-method-edit'>    edit: function() { },
+</span>
+<span id='Ext-tux-dataview-component-editable-Abstract-method-cancelEdit'>    cancelEdit: function() { },
+</span>
+<span id='Ext-tux-dataview-component-editable-Abstract-method-select'>    select: function(animated) { },
+</span>
+<span id='Ext-tux-dataview-component-editable-Abstract-method-deselect'>    deselect: function(animated) { }
+</span>
+});
+</pre>
+</body>
+</html>

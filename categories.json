@@ -1,0 +1,49 @@
+[
+      {
+          "name": "Sencha TUX Components",
+          "groups": [
+              {
+                  "name": "ProgressBars",
+                  "classes": [
+                      "Ext.tux.progressbar.ProgressBar",
+                      "Ext.tux.progressbar.Radial",
+                      "Ext.tux.MessageBox"
+                  ]
+              },
+              {
+                  "name": "Form Fields",
+                  "classes": [
+                      "Ext.tux.field.ProgressBar"
+                  ]
+              },
+              {
+                  "name": "Layouts",
+                  "classes": [
+                      "Ext.tux.layout.Orb"
+                  ]
+              },
+              {
+                  "name": "Media",
+                  "classes": [
+                      "Ext.tux.AudioTrack"
+                  ]
+              },
+              {
+                  "name": "DataView",
+                  "classes": [
+                      "Ext.tux.dataview.component.AudioTrack",
+                      "Ext.tux.dataview.component.editable.Multi",
+                      "Ext.tux.dataview.component.editable.Single",
+                      "Ext.tux.dataview.EditableList",
+                      "Ext.tux.dataview.gallery.Gallery"
+                  ]
+              },
+              {
+                  "name": "Plugins",
+                  "classes": [
+                      "Ext.tux.plugin.TouchTimeout"
+                  ]
+              }
+          ]
+     }
+]

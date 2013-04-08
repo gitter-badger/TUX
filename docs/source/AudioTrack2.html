@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-dataview-component-AudioTrack'>/**
+</span>* @class Ext.tux.dataview.component.AudioTrack
+* @extend Ext.dataview.component.DataItem
+* @author Andrea Cammarata
+* @docauthor Andrea Cammarata
+* @aside example audio-track-playlist
+*/
+Ext.define('Ext.tux.dataview.component.AudioTrack', {
+    extend: 'Ext.dataview.component.DataItem',
+    xtype: 'audiotrackdataitem',
+    requires: ['Ext.tux.AudioTrack'],
+    config: {
+        
+<span id='Ext-tux-dataview-component-AudioTrack-cfg-cls'>        /**
+</span>         * The component custom CSS class.
+         */
+        cls: 'x-audio-track-data-item',
+    
+<span id='Ext-tux-dataview-component-AudioTrack-cfg-dataMap'>        /**
+</span>         * Setting up the DataMap object.
+         */
+        dataMap: {
+    
+            getTrack: {
+                setCoverArtUrl: 'cover',
+                setUrl: 'audio'
+            }
+
+        },
+
+<span id='Ext-tux-dataview-component-AudioTrack-cfg-track'>        /**
+</span>         * @cfg {Ext.tux.AudioCover} track
+         * The component that allows the user to see the track cover
+         * and hear a preview of the audio file.
+         */
+        track: {
+            xtype: 'audiotrack'
+        },
+    
+<span id='Ext-tux-dataview-component-AudioTrack-cfg-title'>        /**
+</span>         * @cfg {Ext.Component} title
+         * The component used to show the Track title.
+         */
+        title: {
+            cls: 'x-track-info',
+            tpl: [ 
+                '&lt;div class=&quot;title&quot;&gt;{title}&lt;/div&gt;',
+                '&lt;div class=&quot;artist&quot;&gt;{artist}&lt;/div&gt;'
+            ]
+        },
+
+<span id='Ext-tux-dataview-component-AudioTrack-cfg-layout'>        /**
+</span>         * The component use an 'hbox' stretched layout.
+         * In this way the Edit Button will be placed at the
+         * right edge of the device screen. */
+        layout: {
+            type: 'hbox',
+            align: 'stretch'
+        }
+
+    },
+
+<span id='Ext-tux-dataview-component-AudioTrack-method-applyTitle'>    /**
+</span>     * Apply the DataView item Name component.
+     * @param {Object} config The configuration Object.
+     * @return {Ext.Component} The Name component.
+     */
+    applyTitle: function(config) {
+        return Ext.factory(config, Ext.Component, this.getTitle());
+    },
+
+<span id='Ext-tux-dataview-component-AudioTrack-method-updateTitle'>    /**
+</span>     * Update the Track title.
+     * @param {Ext.Component} newName The new component.
+     * @param {Ext.Component} oldName The old component.
+     */
+    updateTitle: function(newTitle, oldTitle) {
+    
+        // Get the associated record
+        var track = this.getRecord();
+    
+        /* If is defined a new name component this is added
+         * to this DataView component.
+         */
+        if (oldTitle) {
+            this.remove(oldTitle);
+        }
+
+        //If is already defined a name component this is removed
+        if (newTitle) {
+    
+            // Apply the track informations
+            newTitle.setData({
+                title: track.get('title'),
+                artist: track.get('artist')
+            });
+    
+            this.add(newTitle);
+        }
+
+    },
+
+<span id='Ext-tux-dataview-component-AudioTrack-method-applyTrack'>    /**
+</span>     * Apply the DataView Track audio component.
+     * @param {Object} config The configuration Object.
+     * @return {Ext.tux.AudioCover} The new Audio track component.
+     */
+    applyTrack: function(config) {
+        return Ext.factory(config, Ext.tux.AudioCover, this.getTrack());
+    },
+
+<span id='Ext-tux-dataview-component-AudioTrack-method-updateTrack'>    /**
+</span>     * Update the Track audio component.
+     * @param {Ext.tux.AudioCover} newTrack The new track audio component.
+     * @param {Ext.tux.AudioCover} oldTrack The old track audio component.
+     */
+    updateTrack: function(newTrack, oldTrack) {
+    
+        /* If is already defined a Track component this
+         * will be removed. */
+        if (oldTrack) {
+            this.remove(oldTrack);
+        }
+    
+        /* If is defined a new Track component this will be added
+         * to this DataView component after setting all the required 
+         * handlers. */
+        if (newTrack) {
+    
+            newTrack.on({
+                flippedchange: 'onFlippedChange',
+                scope: this
+            });
+        
+            this.add(newTrack);
+        }
+
+    },
+
+<span id='Ext-tux-dataview-component-AudioTrack-method-onFlippedChange'>    /**
+</span>     * Callback function called when an audio track changes its flip status.
+     * @param {Ext.tux.AudioCover} track The audio track component.
+     * @param {Boolean} flipped The new flipped status.
+     * @param {Boolean} oldFlipped The old flipped status.
+     */
+    onFlippedChange: function(track, flipped, oldFlipped){
+
+        //Getting the dataview
+        var dataview = this.getDataview(),
+
+            // Get the eventually already playing track
+            playingTrack = dataview.playingTrack;
+
+        if(flipped){
+
+            /* If there is an already playing track, then this
+             * needs to be stopped and show back the cover face. */
+            if(playingTrack){
+                playingTrack.setFlipped(false);
+            }
+
+            // Caching the current playing audio track
+            dataview.playingTrack = track;
+    
+        }
+        else {
+        
+            delete dataview.playingTrack;
+        
+        }
+    
+    }
+
+});
+</pre>
+</body>
+</html>

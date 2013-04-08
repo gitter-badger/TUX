@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-dataview-gallery-DetailCard'>/**
+</span> * @class Ext.tux.dataview.gallery.DetailCard
+ * @extend Ext.Container
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @private
+ */
+Ext.define('Ext.tux.dataview.gallery.DetailCard', {
+    extend: 'Ext.Container',
+    xtype: 'gallerydetailcard',
+    requires: [
+        'Ext.Carousel',
+        'Ext.dataview.DataView',
+        'Ext.Img',
+        'Ext.TitleBar'
+    ],
+
+<span id='Ext-tux-dataview-gallery-DetailCard-event-photochange'>    /**
+</span>     * @event photochange
+     * Fires on preview Carousel active picture changes.
+     * @param {Ext.tux.dataview.gallery.DetailCard} this
+     * @param {Ext.Img} component The Img component associated the new active picture.
+     * @param {Ext.data.Model} record The data model which holds all the picture informations.
+     */
+
+<span id='Ext-tux-dataview-gallery-DetailCard-event-enterfullscreen'>    /**
+</span>     * @event enterfullscreen
+     * Fires when the component enter the fullscreen mode hiding
+     * the top docked Toolbar and the bottom pictures thumbs.
+     * @param {Ext.tux.dataview.gallery.DetailCard} this
+     */
+
+<span id='Ext-tux-dataview-gallery-DetailCard-event-exitfullscreen'>    /**
+</span>     * @event exitfullscreen
+     * Fires when the component exit the fullscreen mode showing
+     * the top docked Toolbar and the bottom pictures thumbs.
+     * @param {Ext.tux.dataview.gallery.DetailCard} this
+     */
+
+    config: {
+    
+<span id='Ext-tux-dataview-gallery-DetailCard-cfg-layout'>        /**
+</span>         * @cfg {String} layout
+         * @inheritdoc Ext.Container#layout
+         * @accessor
+         */
+        layout: 'fit',
+
+<span id='Ext-tux-dataview-gallery-DetailCard-cfg-store'>        /**
+</span>         * @cfg {Ext.data.NodeStore} store.
+         * The album pictures store.
+         */
+        store: null,
+
+<span id='Ext-tux-dataview-gallery-DetailCard-cfg-preview'>        /**
+</span>         * @cfg {Object / Ext.Carousel} preview
+         * The object configuration for the Carousel component
+         * that will be used to show the pictures preview.
+         */
+        preview: {
+            cls: 'x-gallery-preview',
+            indicator: false
+        },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-cfg-thumbs'>        /**
+</span>         * @cfg {Object / Ext.DataView} thumbs
+         * The object configuration for the DataView component
+         * in charge of displaying the thumbs of the same
+         * album of the selected picture.
+         */
+        thumbs: {
+            cls: 'x-gallery-thumbs',
+            docked: 'bottom',
+            scrollable: 'horizontal',
+            inline: {
+                wrap: false
+            },
+            itemTpl: '&lt;div class=&quot;x-gallery-thumb&quot; style=&quot;background-image: url({id});&quot;&gt;&lt;/div&gt;',
+            showAnimation: {
+                type: 'slideIn',
+                direction: 'up',
+                duration: 500
+            },
+            hideAnimation: {
+                type: 'slideOut',
+                direction: 'down',
+                duration: 500
+            }
+        }
+
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-property-isFullScreen'>    /**
+</span>     * @property {Boolean} isFullScreen
+     * `true` if the view is in FullScreen mode.
+     */
+    isFullScreen: false,
+
+<span id='Ext-tux-dataview-gallery-DetailCard-property-previewEvents'>    previewEvents: {
+</span>        activeitemchange: 'onPhotoChange'
+    },
+    
+<span id='Ext-tux-dataview-gallery-DetailCard-property-previewElementEvents'>    previewElementEvents: {
+</span>        element: 'element',
+        tap: 'onPhotoTap'
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-property-thumbsEvents'>    thumbsEvents: {
+</span>        select: 'onThumbSelect'
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-method-applyPreview'>    // @private
+</span>    applyPreview: function(config){
+        return Ext.factory(config, Ext.Carousel, this.getPreview());
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-method-updatePreview'>    // @private
+</span>    updatePreview: function(carousel, oldCarousel){
+    
+        var me = this,
+            bindEvents = Ext.apply({}, me.previewEvents, { scope: me }),
+            elementBindEvents = Ext.apply({}, me.previewElementEvents, { scope: me });
+        
+        if(oldCarousel){
+    
+            oldCarousel.un(bindEvents);
+            oldCarousel.un(elementBindEvents);
+            this.remove(oldCarousel, true);
+
+        }
+    
+        if(carousel){
+    
+            carousel.on(bindEvents);
+            carousel.on(elementBindEvents);
+            this.add(carousel);
+
+        }
+    
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-method-onPhotoTap'>    /**
+</span>     * Callback event called when the user tap
+     * on the preview Carousel entering / exiting the
+     * fullscreen mode.
+     * @private
+     */
+    onPhotoTap: function(){
+    
+        var me = this,
+            thumbs = me.getThumbs(),
+            isFullScreen = me.isFullScreen,
+            eventName;
+    
+        thumbs[isFullScreen ? 'show' : 'hide']();
+    
+        me.isFullScreen = !isFullScreen;
+    
+        eventName = me.isFullScreen ? 'enterfullscreen' : 'exitfullscreen';
+    
+        me.fireEvent(eventName, me);
+
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-method-applyThumbs'>    // @private
+</span>    applyThumbs: function(config){
+        return Ext.factory(config, Ext.DataView, this.getThumbs());
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-method-updateThumbs'>    // @private
+</span>    updateThumbs: function(dataview, oldDataview){
+    
+        var me = this,
+            bindEvents = Ext.apply({}, me.thumbsEvents, { scope: me });
+        
+        if(oldDataview){
+            oldDataview.un(bindEvents);
+            this.remove(oldDataview, true);
+        }
+    
+        if(dataview){
+            dataview.on(bindEvents);
+            this.add(dataview);
+        }
+    
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-method-updateStore'>    /**
+</span>     * Update the store which contains the pictures
+     * of the same album of the selected on.
+     * @param {Ext.data.NodeStore} store The album pictures store.
+     */
+    updateStore: function(store){
+    
+        var me = this,
+            preview = me.getPreview(),
+            thumbs = me.getThumbs(),
+            id;
+
+        thumbs.setStore(store);
+
+        preview.removeAll();
+    
+        store.each(function(record, index){
+
+            preview.add({
+                xtype: 'img',
+                itemId: index,
+                src: record.getId(),
+                record: record
+            });
+
+        });
+
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-method-showPicture'>    /**
+</span>     * Show the preview of a new picture setting it
+     * as the new active item of the Carousel.
+     * @param {String} item The itemId associated to the
+     * new picture to show.
+     */
+    showPicture: function(itemId){
+        this.getPreview().setActiveItem(itemId);
+    },
+
+<span id='Ext-tux-dataview-gallery-DetailCard-method-onPhotoChange'>    // @private
+</span>    onPhotoChange: function(carousel, component){
+        
+        var me = this,
+            thumbs = me.getThumbs(),
+            record = component._record;
+
+        thumbs.select(record, false, true);
+
+        me.fireEvent('photochange', me, component, record);
+    
+    },
+    
+<span id='Ext-tux-dataview-gallery-DetailCard-method-onThumbSelect'>    // @private
+</span>    onThumbSelect: function(list, record){
+    
+        var preview = this.getPreview(),
+            index = list.getStore().indexOf(record);
+    
+        preview.setActiveItem(index);
+    
+    }
+
+});
+</pre>
+</body>
+</html>

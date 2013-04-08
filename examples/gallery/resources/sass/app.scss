@@ -1,0 +1,13 @@
+$base-color: #202020;
+$page-bg-color: #000;
+
+@import 'sencha-touch/base';
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+@import 'sencha-tux/base';
+@import 'sencha-tux/default';
+@import 'sencha-tux/default/all';
+
+// Definition of the custom Toolbar UI
+@include sencha-toolbar-ui('black', #2c2c2c, 'glossy');

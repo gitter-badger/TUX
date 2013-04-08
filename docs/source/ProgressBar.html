@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-field-ProgressBar'>/**
+</span> * @class Ext.tux.field.ProgressBar
+ * @extend Ext.field.Field
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @aside example progressbar-form
+ */
+Ext.define('Ext.tux.field.ProgressBar', {
+    extend: 'Ext.field.Field',
+    xtype: 'progressbarfield',
+    requires: ['Ext.tux.progressbar.ProgressBar'],
+    alternateClassName: 'Ext.form.ProgressBar',
+    config: {
+    
+<span id='Ext-tux-field-ProgressBar-cfg-progressbarUi'>        /**
+</span>         * @cfg {String} progressbarUi
+         * @inheritdoc Ext.tux.ProgressBar#ui
+         */
+        progressbarUi: 'dark',
+    
+<span id='Ext-tux-field-ProgressBar-cfg-component'>        component: {
+</span>            xtype: 'progressbar'
+        }
+
+    },
+<span id='Ext-tux-field-ProgressBar-property-proxyConfig'>    proxyConfig: {
+</span>
+<span id='Ext-tux-field-ProgressBar-cfg-animated'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#animated
+         * @cfg {boolean} animated
+         */
+        animated: true,
+
+<span id='Ext-tux-field-ProgressBar-cfg-animateOnPaint'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#animateOnPaint
+         * @cfg {boolean} animateOnPaint
+         */
+        animateOnPaint: true,
+
+<span id='Ext-tux-field-ProgressBar-cfg-duration'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#duration
+         * @cfg {Number} duration
+         */
+        duration: 2000,
+
+<span id='Ext-tux-field-ProgressBar-cfg-message'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#message
+         * @cfg {String} message
+         */
+        message: null,
+
+<span id='Ext-tux-field-ProgressBar-cfg-maxValue'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#maxValue
+         * @cfg {Number} maxValue
+         */
+        maxValue: 100,
+
+<span id='Ext-tux-field-ProgressBar-cfg-value'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#value
+         * @cfg {Number} value
+         */
+        value: 0,
+
+<span id='Ext-tux-field-ProgressBar-cfg-imageMask'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#imageMask
+         * @cfg {boolean} imageMask
+         */
+        imageMask: false,
+
+<span id='Ext-tux-field-ProgressBar-cfg-imageMaskCls'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#imageMaskCls
+         * @cfg {String} imageMaskCls
+         */
+        imageMaskCls: Ext.baseCSSPrefix + 'image-mask',
+
+<span id='Ext-tux-field-ProgressBar-cfg-imageCls'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#imageCls
+         * @cfg {String} imageCls
+         */
+        imageCls: null,
+
+<span id='Ext-tux-field-ProgressBar-cfg-showValue'>        /**
+</span>         * @inheritdoc Ext.tux.ProgressBar#showValue
+         * @cfg {boolean} showValue
+         */
+        showValue: true
+
+    },
+
+<span id='Ext-tux-field-ProgressBar-method-update'>    // @inheritdoc Ext.tux.ProgressBar#update
+</span>    update: function(percentage, message){
+        this.getComponent().update(percentage, message);
+    },
+
+<span id='Ext-tux-field-ProgressBar-method-updateProgressbarUi'>    // @private
+</span>    updateProgressbarUi: function(value){
+        this.getComponent().setUi(value);
+    }
+    
+});</pre>
+</body>
+</html>
