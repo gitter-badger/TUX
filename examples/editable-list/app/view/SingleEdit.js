@@ -2,7 +2,7 @@ Ext.define('EditableList.view.SingleEdit', {
     extend: 'Ext.tux.EditableList',
     xtype: 'singleeditview',
     requires: [
-        'Examples.store.Contacts'
+        'EditableList.store.Contacts'
     ],
     config: {
         store: 'Contacts',

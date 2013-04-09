@@ -2,7 +2,7 @@ Ext.define('EditableList.view.MultiEdit', {
     extend: 'Ext.tux.EditableList',
     xtype: 'multieditview',
     requires: [
-        'Examples.store.Contacts'
+        'EditableList.store.Contacts'
     ],
     config: {
         store: 'Contacts',

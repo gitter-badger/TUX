@@ -2,7 +2,6 @@
 Ext.Loader.setPath({
     'Ext': '../../touch/src',
     'Ext.tux': '../../tux/src',
-    'Examples': '../app',
     'EditableList': 'app'
 });
 //</debug>
@@ -25,7 +24,7 @@ Ext.application({
     ],
 
     stores: [
-        'Examples.store.Contacts',
+        'Contacts',
         'Puppies'
     ],
 

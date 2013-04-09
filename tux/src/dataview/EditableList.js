@@ -38,7 +38,13 @@ Ext.define('Ext.tux.dataview.EditableList', {
          * @cfg {Boolean} useComponents
          * @inheritdoc Ext.dataview.DataView#useComponents
          */
-        useComponents: true
+        useComponents: true,
+
+        /**
+         * @cfg {Boolean} variableHeights
+         * @inheritdoc Ext.dataview.DataView#variableHeights
+         */
+        variableHeights: true
 
     },
 
@@ -195,17 +201,21 @@ Ext.define('Ext.tux.dataview.EditableList', {
     // @private
     onToggleEdit: function(btn){
     
-        if(this.isEditing){
+        var me = this,
+            deleteButton = me.getDeleteButton();
+
+        if(me.isEditing){
+	        deleteButton.hide();
             btn.setText('Edit');
-            this.runItemsAction('cancelEdit');
-            Ext.defer(this.clearEditableSelection, 500, this);
+            me.runItemsAction('cancelEdit');
+            Ext.defer(me.clearEditableSelection, 500, me);
         }
         else {
             btn.setText('Cancel');
-            this.runItemsAction('edit');
+            me.runItemsAction('edit');
         }
     
-        this.isEditing = !this.isEditing;
+        me.isEditing = !me.isEditing;
     
     },
 
@@ -218,7 +228,7 @@ Ext.define('Ext.tux.dataview.EditableList', {
 
         me.getStore().remove(records);
         selection.clear();
-        me.getDeleteButton().hide();
+        btn.hide();
     
         me.fireEvent('delete', me, records);
     

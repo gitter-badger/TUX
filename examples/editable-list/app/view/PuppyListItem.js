@@ -40,7 +40,8 @@ Ext.define('EditableList.view.PuppyListItem', {
          */
         progressBar: {
 	        duration: 0,
-            width: 200
+            width: 200,
+            ui: 'dark'
         }
 
     },
