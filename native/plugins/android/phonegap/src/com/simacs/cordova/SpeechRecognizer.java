@@ -17,74 +17,74 @@ import android.util.Log;
 import android.widget.EditText;
 
 public class SpeechRecognizer extends CordovaPlugin {
-	
-	public static final String ACTION_SPEECH = "listen";
-	
-	private static final String LOG_TAG = "SpeechRecognizerPlugin";
-	protected static final int RESULT_SPEECH = 1;
-	
-	private CallbackContext callbackContext;
+    
+    public static final String ACTION_SPEECH = "listen";
+    
+    private static final String LOG_TAG = "SpeechRecognizerPlugin";
+    protected static final int RESULT_SPEECH = 1;
+    
+    private CallbackContext callbackContext;
 
-	@Override
-	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    @Override
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
-		this.callbackContext = callbackContext;
-		
-		JSONObject params = args.getJSONObject(0);
-		
-	    if (ACTION_SPEECH.equals(action)) {
-	    	
-	    	String culture = (String)params.get("culture");
-	    	String prompt = (String)params.get("prompt");
-	    	
-	    	Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        this.callbackContext = callbackContext;
+        
+        JSONObject params = args.getJSONObject(0);
+        
+        if (ACTION_SPEECH.equals(action)) {
+            
+            String culture = (String)params.get("culture");
+            String prompt = (String)params.get("prompt");
+            
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
-	        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, culture);
-	        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, prompt);
-	        
-	    	try {
-	    		
-	    		cordova.setActivityResultCallback(this);
-	    		cordova.getActivity().startActivityForResult(intent, RESULT_SPEECH);
-	    		return true;
-	  
-	        } catch (ActivityNotFoundException a) {
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, culture);
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, prompt);
+            
+            try {
+                
+                cordova.setActivityResultCallback(this);
+                cordova.getActivity().startActivityForResult(intent, RESULT_SPEECH);
+                return true;
+      
+            } catch (ActivityNotFoundException a) {
 
-	        	callbackContext.error("Your device doesn't support Speech to Text.");
-	        	
-	        }
+                callbackContext.error("Your device doesn't support Speech to Text.");
+                
+            }
 
-		} 
-	    else {
-	    	
-	    	callbackContext.error("Invalid Action: " + action);
-	    	Log.d(LOG_TAG, "Invalid action : " + action);
-	    	
-		}
-	    
-		return false;
-	    
-	}
-	
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
+        } 
+        else {
+            
+            callbackContext.error("Invalid Action: " + action);
+            Log.d(LOG_TAG, "Invalid action : " + action);
+            
+        }
+        
+        return false;
+        
+    }
+    
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        
         super.onActivityResult(requestCode, resultCode, data);
  
         switch (requestCode) {
         
-	        case RESULT_SPEECH: {
-	        
-	            if (resultCode == Activity.RESULT_OK && null != data) {
-	 
-	                ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-	                this.callbackContext.success(text.get(0));
-	
-	            }
-	            
-	            break;
-	
-	        }
+            case RESULT_SPEECH: {
+            
+                if (resultCode == Activity.RESULT_OK && null != data) {
+     
+                    ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    this.callbackContext.success(text.get(0));
+    
+                }
+                
+                break;
+    
+            }
  
         }
         
