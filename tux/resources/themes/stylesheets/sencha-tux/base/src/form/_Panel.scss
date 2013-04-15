@@ -1,0 +1,30 @@
+.x-field-speech {
+    
+    .x-field-input {
+        
+        padding-right: 3.2em;
+
+        .x-speech-icon {
+            
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            background-image: url($tux-images + '/speech_icon.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 55% 55%;
+            width: $form-clear-size;
+            height: $form-clear-size;
+            margin: .5em;
+            margin-top: -($form-clear-size/2);
+            right: -.5em;
+
+        }
+    
+        .x-clear-icon {
+            right: 1em;
+        }
+        
+    }
+    
+}

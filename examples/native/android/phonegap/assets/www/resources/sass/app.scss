@@ -1,0 +1,28 @@
+// Override the default color scheme
+$base-color: #a4c739;
+$page-bg-color: #393838;
+
+@import 'sencha-touch/base';
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+@import 'sencha-tux/base';
+@import 'sencha-tux/default';
+@import 'sencha-tux/default/all';
+
+@include icon('volume');
+
+.x-field-speech {
+    .x-field-input {
+        .x-speech-icon {
+            background-image: inline_image('speech_icon.png');
+        }
+    }
+}
+
+// Define the custom styles for the Speech Recognition view
+.x-speech-recognition-view {
+	.x-field-select .x-input-text {
+	    text-align: center;	
+	}
+}

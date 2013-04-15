@@ -8,17 +8,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.R;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.util.Log;
-import android.widget.EditText;
 
 public class SpeechRecognizer extends CordovaPlugin {
     
-    public static final String ACTION_SPEECH = "listen";
+    public static final String ACTION_LISTEN = "listen";
     
     private static final String LOG_TAG = "SpeechRecognizerPlugin";
     protected static final int RESULT_SPEECH = 1;
@@ -32,7 +30,7 @@ public class SpeechRecognizer extends CordovaPlugin {
         
         JSONObject params = args.getJSONObject(0);
         
-        if (ACTION_SPEECH.equals(action)) {
+        if (ACTION_LISTEN.equals(action)) {
             
             String culture = (String)params.get("culture");
             String prompt = (String)params.get("prompt");
