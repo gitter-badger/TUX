@@ -10,8 +10,8 @@ cordova.define("cordova/plugin/speechrecognizer",
     /**
     * @param {Object} argument The json object which contains the arguments that should be used
     * to initialize the speech recognition process.
-    * @param {Function} successCallback The callback which will be called when listDevices is successful
-    * @param {Function} failureCallback The callback which will be called when listDevices encouters an error
+    * @param {Function} successCallback The callback which will be called when listen is successful.
+    * @param {Function} failureCallback The callback which will be called when listen encouters an error.
     */
     SpeechRecognizer.prototype.listen = function(argument, successCallback, failureCallback) {
         exec(successCallback, failureCallback, 'SpeechRecognizer', 'listen', [argument]);
