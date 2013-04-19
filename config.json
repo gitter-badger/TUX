@@ -11,6 +11,6 @@
         "XMLHttpRequest"
     ],
     "--": [
-        "tux"
+        "tux/src"
     ]
 }

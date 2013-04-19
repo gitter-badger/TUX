@@ -15,16 +15,18 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='global-css_var-S-tux-root-dir'>/**
-</span> * @var {string} $tux-root-dir
- * The absolute root directory where to found the TUX styles.
+  <pre class="prettyprint lang-js"><span id='Ext-tux-field-SpeechToText'>/**
+</span> * @class Ext.tux.field.SpeechToText
+ * @extend Ext.field.Text
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
  */
-$tux-root-dir: '/TUX/tux';
-
-<span id='global-css_var-S-tux-images'>/**
-</span> * @var {string} $tux-images
- * The directory where to find all the tux images.
- */
-$tux-images: $tux-root-dir + '/images';</pre>
+Ext.define('Ext.tux.field.SpeechToText', {
+    extend: 'Ext.field.Text',
+    xtype: 'speechtotextfield',
+    requires: [
+        'Ext.tux.device.SpeechRecognizer'
+    ]
+});</pre>
 </body>
 </html>

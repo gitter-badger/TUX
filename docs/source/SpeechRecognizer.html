@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-device-speechrecognizer-SpeechRecognizer'>/**
+</span> * @class Ext.tux.device.speechrecognizer.SpeechRecognizer
+ */
+Ext.define('Ext.tux.device.SpeechRecognizer', {
+    
+    singleton: true,
+
+    requires: [
+        'Ext.device.Communicator',
+        'Ext.tux.device.speechrecognizer.PhoneGap',
+        'Ext.tux.device.speechrecognizer.Sencha'
+    ],
+
+<span id='Ext-tux-device-speechrecognizer-SpeechRecognizer-method-constructor'>    constructor: function() {
+</span>        
+        var browserEnv = Ext.browser.is;
+
+        // TODO: it seems there is a bug with touch2.2.0 where PhoneGap is not detected
+
+        //if (Ext.os.is.Android &amp;&amp; browserEnv.PhoneGap) {
+            return Ext.create('Ext.tux.device.speechrecognizer.PhoneGap');
+        //}
+        //else {
+        //    return Ext.create('Ext.tux.device.speechrecognizer.Sencha');
+        //}
+    
+    }
+
+});</pre>
+</body>
+</html>
