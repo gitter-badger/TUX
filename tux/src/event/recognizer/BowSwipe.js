@@ -24,7 +24,7 @@ Ext.define('Ext.tux.event.recognizer.BowSwipe', {
     },
 
     config: {
-        minDegrees: 25
+        minDegrees: 30
     },
 
 	// @private
