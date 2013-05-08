@@ -13,7 +13,8 @@
               {
                   "name": "Form Fields",
                   "classes": [
-                      "Ext.tux.field.ProgressBar"
+                      "Ext.tux.field.ProgressBar",
+                      "Ext.tux.field.Container"
                   ]
               },
               {

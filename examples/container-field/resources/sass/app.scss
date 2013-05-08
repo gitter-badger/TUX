@@ -1,0 +1,11 @@
+$base-color: #299cda;
+
+@import 'sencha-touch/base';
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+@import 'sencha-tux/base';
+@import 'sencha-tux/default';
+@import 'sencha-tux/default/all';
+
+@include icon('pencil');

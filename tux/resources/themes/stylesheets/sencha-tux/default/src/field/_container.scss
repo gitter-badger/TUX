@@ -1,0 +1,41 @@
+/**
+ * @class Ext.tux.field.Container
+ */
+
+.x-field-container {
+    
+    .x-container-row {
+    
+        border-top: solid 1px $form-light;
+
+        &:first-child {
+            border-top: 0;
+        }
+    
+        .x-inner div {
+            border: none;
+        }
+    
+        .x-field {
+    
+            .x-field-input {
+                border-right: solid 1px $form-light;
+            }
+
+            &:last-child {
+    
+                .x-field-input {
+                    border-right: none;
+                }
+
+            }
+
+            .x-form-label {
+                display: none !important;
+            }
+
+        }
+
+    }
+
+}

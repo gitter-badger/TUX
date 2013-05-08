@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Ext-tux-field-Container'>/**
+</span> * @class Ext.tux.field.Container
+ * @extend Ext.field.Field
+ * @author Andrea Cammarata
+ * @docauthor Andrea Cammarata
+ * @aside example container-field
+ */
+Ext.define('Ext.tux.field.Container', {
+    extend: 'Ext.field.Field',
+    xtype: 'containerfield',
+    config: {
+
+<span id='Ext-tux-field-Container-cfg-items'>	    /**
+</span>         * @cfg items
+         * The field rows used to contains all the fields.
+         * @accessor
+         */
+        items: null,
+
+<span id='Ext-tux-field-Container-cfg-component'>        component: {
+</span>            xtype: 'container',
+            cls: 'x-field-container'
+        }
+    },
+
+<span id='Ext-tux-field-Container-property-fields'>    /**
+</span>     * @property
+     * @readonly
+     * The collection of all the fields handled
+     * by the FieldContainer.
+     */
+    fields: null,
+
+<span id='Ext-tux-field-Container-property-rowConfig'>    // @private
+</span>    rowConfig: {
+	    cls: 'x-container-row',
+        layout: {
+            type: 'hbox',
+            align: 'stretch'
+        },
+        defaults: { 
+            flex: 1 
+	    }
+    },
+
+<span id='Ext-tux-field-Container-method-initialize'>    // @private
+</span>    initialize: function(config){
+	
+        var me = this,
+            rows = me.getItems(),
+            cmp = me.getComponent();
+
+        // Apply the default row config to every row item
+        Ext.each(rows, function(row){
+	        Ext.apply(row, me.rowConfig);
+            cmp.add(Ext.factory(row, Ext.Container));
+        });
+
+        me.initFields();
+        me.callParent(arguments);
+
+    },
+
+<span id='Ext-tux-field-Container-method-initFields'>    // @private
+</span>    initFields: function(){
+
+        var me = this;
+        me.fields = new Ext.util.MixedCollection(true, me.getFieldKey);
+        me.fields.addAll(Ext.ComponentQuery.query('field[name!=&quot;&quot;]', me.getComponent()));
+
+    },
+
+<span id='Ext-tux-field-Container-method-getFieldKey'>    // @private
+</span>    getFieldKey: function(field){
+        return field.getName();
+    },
+
+<span id='Ext-tux-field-Container-method-getValue'>    /**
+</span>     * Get a FieldContainer object value.
+     * @return {Object} The FieldContainer value.
+     */
+    getValue: function(){
+
+        var cmp = this.getComponent(),
+            value = {};
+
+        this.fields.each(function(field){
+            value[field.getName()] = field.getValue();
+        });
+
+        return value;
+
+    },
+
+<span id='Ext-tux-field-Container-method-applyValue'>    // @private
+</span>    applyValue: function(value){
+
+        for(name in value){
+            this.getField(name).setValue(value[name]);
+        }
+
+    },
+
+<span id='Ext-tux-field-Container-method-getField'>    /**
+</span>     * Get a FieldContainer subfield.
+     * @param {String} name The field name.
+     * @return {Ext.field.Field} The requested field.
+     */
+    getField: function(name){
+        return this.fields.getByKey(name);
+    }
+
+});
+</pre>
+</body>
+</html>

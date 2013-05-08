@@ -110,6 +110,13 @@
                 "description": "Simple example application which show some ProgressBar form fields in action. ",
                 "url": "/progressbar/index.html#form",
                 "icon": "/progressbar/doc-icons/form.png"
+             },
+             {
+                "name": "container-field",
+                "title": "Container Field",
+                "description": "Show how to use a Container Field to create a complex Address field.",
+                "url": "/container-field/index.html#address",
+                "icon": "/container-field/doc-icons/address.png"
              }
         ]
     },

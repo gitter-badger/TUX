@@ -15,18 +15,98 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='Ext-tux-field-SpeechToText'>/**
-</span> * @class Ext.tux.field.SpeechToText
- * @extend Ext.field.Text
+  <pre class="prettyprint lang-js"><span id='Ext-tux-plugin-SpeechToText'>/**
+</span> * @class Ext.tux.plugin.SpeechToText
+ * @extend Ext.Evented
  * @author Andrea Cammarata
  * @docauthor Andrea Cammarata
  */
-Ext.define('Ext.tux.field.SpeechToText', {
-    extend: 'Ext.field.Text',
-    xtype: 'speechtotextfield',
+Ext.define('Ext.tux.plugin.SpeechToText', {
+    extend: 'Ext.Evented',
+    alias: 'plugin.speechtotext',
     requires: [
         'Ext.tux.device.SpeechRecognizer'
-    ]
-});</pre>
+    ],
+    config: {
+    
+<span id='Ext-tux-plugin-SpeechToText-cfg-prompt'>        /**
+</span>         * @cfg {String} prompt
+         * The default text prompt to show to users when asking
+         * to start speaking.
+         */
+        prompt: null
+    
+    },
+
+<span id='Ext-tux-plugin-SpeechToText-property-component'>    /**
+</span>     * @property {Ext.Component} component
+     * The component to which this plugin is binded to.
+     * @accessor
+     */
+    component: null,
+
+<span id='Ext-tux-plugin-SpeechToText-method-init'>    /**
+</span>     * @private
+     * Sets up all of the references the plugin needs
+     */
+    init: function(component) {
+        
+        var me = this,
+            element = component.element,
+            fieldInputEl;
+    
+        if(!Ext.tux.device.SpeechRecognizer){
+            Ext.Logger.error('Not in a native environment.');
+        }
+    
+        if(component.xtype === 'textfield' || component.xtype === 'textareafield'){
+        
+            element.addCls(Ext.baseCSSPrefix + 'field-speech');
+        
+            fieldInputEl = Ext.get(component.element.query('.x-field-input')[0]);
+        
+            me.speechIcon = fieldInputEl.createChild({
+                cls: 'x-speech-icon'
+            });
+        
+            me.speechIcon.on('tap', 'onSpeechIconTap', me);
+        
+        }
+
+        me.component = component;
+    
+    },
+
+<span id='Ext-tux-plugin-SpeechToText-method-onSpeechIconTap'>    // @private
+</span>    onSpeechIconTap: function(e) {
+        this.fireAction('speechicontap', [this, e], 'doSpeechIconTap');
+    },
+
+<span id='Ext-tux-plugin-SpeechToText-method-doSpeechIconTap'>    // @private
+</span>    doSpeechIconTap: function(me, e) {
+    
+        var prompt = me.getPrompt();
+    
+        Ext.tux.device.SpeechRecognizer.listen({
+            prompt: prompt,
+            scope: me,
+            success: me.onRecognizmentSuccess,
+            failure: me.onRecognizmentFailure
+        });
+
+    },
+
+<span id='Ext-tux-plugin-SpeechToText-method-onRecognizmentSuccess'>    // @private
+</span>    onRecognizmentSuccess: function(text){
+        this.component.setValue(text);
+    },
+
+<span id='Ext-tux-plugin-SpeechToText-method-onRecognizmentFailure'>    // @private
+</span>    onRecognizmentFailure: function(text){
+        this.component.setValue('');
+    }
+
+});
+</pre>
 </body>
 </html>
