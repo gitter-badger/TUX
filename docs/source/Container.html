@@ -27,7 +27,7 @@ Ext.define('Ext.tux.field.Container', {
     xtype: 'containerfield',
     config: {
 
-<span id='Ext-tux-field-Container-cfg-items'>	    /**
+<span id='Ext-tux-field-Container-cfg-items'>        /**
 </span>         * @cfg items
          * The field rows used to contains all the fields.
          * @accessor
@@ -50,26 +50,26 @@ Ext.define('Ext.tux.field.Container', {
 
 <span id='Ext-tux-field-Container-property-rowConfig'>    // @private
 </span>    rowConfig: {
-	    cls: 'x-container-row',
+        cls: 'x-container-row',
         layout: {
             type: 'hbox',
             align: 'stretch'
         },
         defaults: { 
             flex: 1 
-	    }
+        }
     },
 
 <span id='Ext-tux-field-Container-method-initialize'>    // @private
 </span>    initialize: function(config){
-	
+    
         var me = this,
             rows = me.getItems(),
             cmp = me.getComponent();
 
         // Apply the default row config to every row item
         Ext.each(rows, function(row){
-	        Ext.apply(row, me.rowConfig);
+            Ext.apply(row, me.rowConfig);
             cmp.add(Ext.factory(row, Ext.Container));
         });
 

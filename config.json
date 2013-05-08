@@ -1,5 +1,5 @@
 {
-    "--title": "Sencha TUX Documentation",
+    "--title": "TUX Documentation",
     "--images": "docs-assets",
     "--warnings": ["-link", "-no_doc"],
     "--ignore-global": true,

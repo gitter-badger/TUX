@@ -11,8 +11,7 @@ Professional Touch User Extensions for Sencha Touch 2.
     All rights reserved.
 
 ## Open Source License
-This version of Sencha Touch and Sencha Touch Charts is licensed under the terms of the Open
-Source GPL 3.0 license.
+The TUX bundle is licensed under the terms of the Open Source GPL 3.0 license.
 
 http://www.gnu.org/licenses/gpl.html
 

@@ -99,7 +99,7 @@ Ext.define('Ext.tux.progressbar.ProgressBar', {
          */
         showValue: true
 
-    },        
+    },
     template: [
         {
             tag: 'span',

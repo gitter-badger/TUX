@@ -55,8 +55,8 @@ $radial-progressbar-allowed-scales: small medium large;
 	        @include border-radius($size / 2);
 
 	        position: absolute;
-	        width: $size - ($radial-progressbar-margin * 2);
-	        height: $size - ($radial-progressbar-margin * 2);
+	        width: $size - ($radial-progressbar-margin * 2) + 1px;
+	        height: $size - ($radial-progressbar-margin * 2) + 1px;
 
 	    }
 

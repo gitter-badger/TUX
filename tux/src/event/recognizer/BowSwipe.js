@@ -24,11 +24,12 @@ Ext.define('Ext.tux.event.recognizer.BowSwipe', {
     },
 
     config: {
-        minDegrees: 40
+        minDegrees: 30
     },
 
+	// @private
     onTouchStart: function(e) {
-    
+	
         if (this.callParent(arguments) === false) {
             return false;
         }
@@ -42,6 +43,7 @@ Ext.define('Ext.tux.event.recognizer.BowSwipe', {
 
     },
 
+	// @private
     onTouchMove: function(e) {
     
         var touch = e.changedTouches[0],
@@ -59,9 +61,11 @@ Ext.define('Ext.tux.event.recognizer.BowSwipe', {
 
     },
 
+	// @private
     onTouchEnd: function(e) {
 
         if (this.onTouchMove(e) !== false) {
+
             var touch = e.changedTouches[0],
                 x = touch.pageX,
                 y = touch.pageY,
@@ -90,7 +94,7 @@ Ext.define('Ext.tux.event.recognizer.BowSwipe', {
                 touch: touch,
                 direction: direction,
                 duration: duration,
-                radiants: angleDeg,
+                radiants: angleRad,
                 degrees: angleDeg
             });
 

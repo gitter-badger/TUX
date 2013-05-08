@@ -41,11 +41,12 @@ Ext.define('Ext.tux.event.recognizer.BowSwipe', {
 </span>    },
 
     config: {
-<span id='Ext-tux-event-recognizer-BowSwipe-cfg-minDegrees'>        minDegrees: 40
+<span id='Ext-tux-event-recognizer-BowSwipe-cfg-minDegrees'>        minDegrees: 30
 </span>    },
 
-<span id='Ext-tux-event-recognizer-BowSwipe-method-onTouchStart'>    onTouchStart: function(e) {
-</span>    
+<span id='Ext-tux-event-recognizer-BowSwipe-method-onTouchStart'>	// @private
+</span>    onTouchStart: function(e) {
+	
         if (this.callParent(arguments) === false) {
             return false;
         }
@@ -59,8 +60,9 @@ Ext.define('Ext.tux.event.recognizer.BowSwipe', {
 
     },
 
-<span id='Ext-tux-event-recognizer-BowSwipe-method-onTouchMove'>    onTouchMove: function(e) {
-</span>    
+<span id='Ext-tux-event-recognizer-BowSwipe-method-onTouchMove'>	// @private
+</span>    onTouchMove: function(e) {
+    
         var touch = e.changedTouches[0],
             x = touch.pageX,
             y = touch.pageY,
@@ -76,9 +78,11 @@ Ext.define('Ext.tux.event.recognizer.BowSwipe', {
 
     },
 
-<span id='Ext-tux-event-recognizer-BowSwipe-method-onTouchEnd'>    onTouchEnd: function(e) {
-</span>
+<span id='Ext-tux-event-recognizer-BowSwipe-method-onTouchEnd'>	// @private
+</span>    onTouchEnd: function(e) {
+
         if (this.onTouchMove(e) !== false) {
+
             var touch = e.changedTouches[0],
                 x = touch.pageX,
                 y = touch.pageY,
@@ -107,7 +111,7 @@ Ext.define('Ext.tux.event.recognizer.BowSwipe', {
                 touch: touch,
                 direction: direction,
                 duration: duration,
-                radiants: angleDeg,
+                radiants: angleRad,
                 degrees: angleDeg
             });
 
