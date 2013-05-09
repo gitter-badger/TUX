@@ -20,7 +20,9 @@
               {
                   "name": "Layouts",
                   "classes": [
-                      "Ext.tux.layout.Orb"
+                      "Ext.tux.layout.Orb",
+                      "Ext.tux.layout.Stack",
+                      "Ext.tux.fx.layout.card.TimeMachine"
                   ]
               },
               {

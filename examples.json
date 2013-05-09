@@ -129,6 +129,13 @@
                 "description": "Small application which show how to arrange container items around a circle using the Orb layout",
                 "url": "/layouts/index.html#orb",
                 "icon": "/layouts/doc-icons/orb.png"
+            },
+            {
+                "name": "time-machine",
+                "title": "Time Machine",
+                "description": "Simple custom layout and animation which simulate the TimeMachine behavior.",
+                "url": "/time-machine/index.html",
+                "icon": "/time-machine/doc-icons/icon.png"
             }
         ]
     },
