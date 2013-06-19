@@ -1,0 +1,23 @@
+{
+    "name": "ContainerField",
+    "description": "Form Field Container component which allows to create complex fields.",
+    "version": "1",
+    "type": "code",
+    "creator": "Andrea Cammarata",
+    "compatVersion": "1.0.0",
+    "compatFrameworks": [
+        "touch22"
+    ],
+    "classes": [{
+        "className": "Ext.ux.field.Container",
+        "definition": "Definition.js",
+    	"js": [
+    		"Container.js"
+    	],
+    	"css": [
+    		"Container.css"
+    	]
+    }],
+    "local": true,
+    "requires": []
+}

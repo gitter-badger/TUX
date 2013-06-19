@@ -1,0 +1,26 @@
+{
+    "name": "ProgressBar",
+    "description": "Component used to display thepercentual progress of background operations.",
+    "version": "1",
+    "type": "code",
+    "creator": "Andrea Cammarata",
+    "compatVersion": "1.0.0",
+    "compatFrameworks": [
+        "touch22"
+    ],
+    "classes": [{
+        "className": "Ext.tux.progressbar.ProgressBar",
+        "definition": "Definition.js",
+    	"js": [
+    		"ProgressBar.js"
+    	],
+    	"css": [
+    		"ProgressBar.css"
+    	]
+    }],
+    "css": [
+		"ProgressBar.css"
+	],
+    "local": true,
+    "requires": []
+}

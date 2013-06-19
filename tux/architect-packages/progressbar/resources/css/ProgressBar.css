@@ -1,0 +1,136 @@
+/**
+ * @class Ext.tux.progressbar.ProgressBar
+ */
+/**
+ * @var {color} $progressbar-bg-color
+ * Background-color for ProgressBars components.
+ */
+/**
+ * @var {measurement} $progressbar-height
+ * The height of the ProgressBars components.
+ */
+/**
+ * @var {string} $progressbar-bg-animation-speed
+ * The animation speed used by the fill element.
+ */
+/**
+ * @var {boolean} $include-progressbar-uis
+ * True to include the deafults ProgressBar ui.
+ */
+.x-progressbar {
+  position: relative;
+  height: 2.6em;
+  background: #e1e1e1;
+  border: solid 1px #d4d4d4;
+  width: 100%; }
+  .x-progressbar .x-progress-inner {
+    -webkit-background-size: 2.6em 2.6em;
+    -moz-background-size: 2.6em 2.6em;
+    -o-background-size: 2.6em 2.6em;
+    background-size: 2.6em 2.6em;
+    background-image: -webkit-linear-gradient(-45deg, #ffffff 25%, #f6f6f6 25%, #f6f6f6 50%, #ffffff 50%, #ffffff 75%, #f6f6f6 75%, #f6f6f6);
+    background-image: -moz-linear-gradient(-45deg, #ffffff 25%, #f6f6f6 25%, #f6f6f6 50%, #ffffff 50%, #ffffff 75%, #f6f6f6 75%, #f6f6f6);
+    background-image: -o-linear-gradient(-45deg, #ffffff 25%, #f6f6f6 25%, #f6f6f6 50%, #ffffff 50%, #ffffff 75%, #f6f6f6 75%, #f6f6f6);
+    background-image: linear-gradient(-45deg, #ffffff 25%, #f6f6f6 25%, #f6f6f6 50%, #ffffff 50%, #ffffff 75%, #f6f6f6 75%, #f6f6f6);
+    height: 100%; }
+  .x-progressbar .x-progress-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: absolute;
+    padding: .4em .2em;
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: center; }
+    .x-progressbar .x-progress-value.x-hidden {
+      display: none; }
+  .x-progressbar.x-animated .x-progress-inner {
+    -webkit-animation: scroll 2s linear infinite; }
+
+@-webkit-keyframes scroll {
+  0% {
+    background-position: 0; }
+
+  100% {
+    background-position: 2.6em; } }
+
+/** 
+ * Definition of the ProgressBar styles when placed
+ * inside a Toolbar component.
+ */
+.x-toolbar .x-progressbar {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -ms-box-flex: 1;
+  box-flex: 1;
+  margin: 0 .5em;
+  height: 1.5em; }
+  .x-toolbar .x-progressbar .x-progress-value {
+    padding: .4em;
+    font-weight: normal;
+    font-size: .7em; }
+.x-toolbar .x-progressbar, .x-toolbar .x-progressbar .x-progress-inner {
+  -webkit-border-radius: 2.6em;
+  -moz-border-radius: 2.6em;
+  -ms-border-radius: 2.6em;
+  -o-border-radius: 2.6em;
+  border-radius: 2.6em; }
+
+/**
+ * Creates a theme UI for the ProgressBar component.
+ *
+ *     // SCSS
+ *     @include sencha-progressbar-ui('green', #468f59);
+ *
+ *     // JS
+ *     var progressbar = new Ext.tux.ProgresBar({value: 50, ui: 'green'})
+ *
+ * @param {string} $ui-label The name of the UI being created.
+ *   Can not included spaces or special punctuation (used in class names)
+ * @param {color} $color Base color for the UI.
+ * @param {boolean} $includeToolbarUI True to also create the associated custom Toolbar UI.
+ */
+.x-progressbar-dark .x-progress-inner {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #1b6f9c), color-stop(100%, #1f7eb1));
+  background-image: -webkit-linear-gradient(#1b6f9c, #1f7eb1);
+  background-image: -moz-linear-gradient(#1b6f9c, #1f7eb1);
+  background-image: -o-linear-gradient(#1b6f9c, #1f7eb1);
+  background-image: linear-gradient(#1b6f9c, #1f7eb1); }
+.x-progressbar-dark .x-progress-value {
+  color: white; }
+.x-progressbar-dark.x-animated .x-progress-inner {
+  background-image: -webkit-linear-gradient(-45deg, #1b6f9c 25%, #1f7eb1 25%, #1f7eb1 50%, #1b6f9c 50%, #1b6f9c 75%, #1f7eb1 75%, #1f7eb1);
+  background-image: -moz-linear-gradient(-45deg, #1b6f9c 25%, #1f7eb1 25%, #1f7eb1 50%, #1b6f9c 50%, #1b6f9c 75%, #1f7eb1 75%, #1f7eb1);
+  background-image: -o-linear-gradient(-45deg, #1b6f9c 25%, #1f7eb1 25%, #1f7eb1 50%, #1b6f9c 50%, #1b6f9c 75%, #1f7eb1 75%, #1f7eb1);
+  background-image: linear-gradient(-45deg, #1b6f9c 25%, #1f7eb1 25%, #1f7eb1 50%, #1b6f9c 50%, #1b6f9c 75%, #1f7eb1 75%, #1f7eb1); }
+
+.x-toolbar .x-progressbar-dark {
+  -webkit-box-shadow: inset 0px 0 5px #10405a;
+  -moz-box-shadow: inset 0px 0 5px #10405a;
+  box-shadow: inset 0px 0 5px #10405a;
+  background: #135070;
+  border: solid 1px #10405a; }
+
+.x-progressbar-light .x-progress-inner {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #299cda), color-stop(100%, #3fa6de));
+  background-image: -webkit-linear-gradient(#299cda, #3fa6de);
+  background-image: -moz-linear-gradient(#299cda, #3fa6de);
+  background-image: -o-linear-gradient(#299cda, #3fa6de);
+  background-image: linear-gradient(#299cda, #3fa6de); }
+.x-progressbar-light .x-progress-value {
+  color: white; }
+.x-progressbar-light.x-animated .x-progress-inner {
+  background-image: -webkit-linear-gradient(-45deg, #299cda 25%, #3fa6de 25%, #3fa6de 50%, #299cda 50%, #299cda 75%, #3fa6de 75%, #3fa6de);
+  background-image: -moz-linear-gradient(-45deg, #299cda 25%, #3fa6de 25%, #3fa6de 50%, #299cda 50%, #299cda 75%, #3fa6de 75%, #3fa6de);
+  background-image: -o-linear-gradient(-45deg, #299cda 25%, #3fa6de 25%, #3fa6de 50%, #299cda 50%, #299cda 75%, #3fa6de 75%, #3fa6de);
+  background-image: linear-gradient(-45deg, #299cda 25%, #3fa6de 25%, #3fa6de 50%, #299cda 50%, #299cda 75%, #3fa6de 75%, #3fa6de); }
+
+.x-toolbar .x-progressbar-light {
+  -webkit-box-shadow: inset 0px 0 5px #1b6f9c;
+  -moz-box-shadow: inset 0px 0 5px #1b6f9c;
+  box-shadow: inset 0px 0 5px #1b6f9c;
+  background: #1f7eb1;
+  border: solid 1px #1b6f9c; }
