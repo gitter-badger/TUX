@@ -11,38 +11,38 @@
     "classes": [
         {
             "className": "Ext.tux.field.Container",
-	        "definition": "field/Container.js",
-	    	"js": [
-	    		"field/Container.js"
-	    	],
-	    	"css": [
-	    		"tux.css"
-	    	]
+            "definition": "field/Container.js",
+            "js": [
+                "field/Container.js"
+            ],
+            "css": [
+                "tux.css"
+            ]
         },
         {
             "className": "Ext.tux.progressbar.ProgressBar",
             "definition": "progressbar/ProgressBar.js",
-        	"js": [
-        		"progressbar/ProgressBar.js"
-        	],
-        	"css": [
+            "js": [
+                "progressbar/ProgressBar.js"
+            ],
+            "css": [
                 "tux.css"
             ]
         },
         {
             "className": "Ext.tux.progressbar.Radial",
             "definition": "progressbar/Radial.js",
-        	"js": [
-        		"progressbar/Radial.js"
-        	],
-        	"css": [
+            "js": [
+                "progressbar/Radial.js"
+            ],
+            "css": [
                 "tux.css"
             ]
         }
     ],
     "css": [
-		"tux.css"
-	],
+        "tux.css"
+    ],
     "local": true,
     "requires": []
 }
