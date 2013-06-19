@@ -1,7 +1,7 @@
 //<debug>
 Ext.Loader.setPath({
     'Ext': '../../touch/src',
-    'Ext.tux': '../../tux/src',
+    'Ext.tux': '../../tux/src/js',
     'ProgressBar': 'app'
 });
 //</debug>
