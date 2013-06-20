@@ -9,7 +9,7 @@
     toolbox: {
         name: 'ContainerField',
         iconCls: 'icon-panel',
-        category: 'Containers',
+        category: 'Form Fields',
         groups: ['Containers', 'Forms', 'TUX']
     },
     configs: [
@@ -20,5 +20,5 @@
             merge: false
         }
     ],
-    evts: []
+    listeners: []
 }

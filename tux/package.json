@@ -30,6 +30,16 @@
             ]
         },
         {
+            "className": "Ext.tux.field.ProgressBar",
+            "definition": "field/ProgressBar.js",
+            "js": [
+                "field/ProgressBar.js"
+            ],
+            "css": [
+                "tux.css"
+            ]
+        },
+        {
             "className": "Ext.tux.progressbar.Radial",
             "definition": "progressbar/Radial.js",
             "js": [
