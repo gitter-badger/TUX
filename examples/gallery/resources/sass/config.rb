@@ -14,5 +14,5 @@ css_path = File.join(dir, "..", "css")
 # Require any additional compass plugins here.
 images_dir = File.join(dir, "..", "images")
 fonts_path = File.join(dir, '../../../../touch/resources/themes/fonts/')
-output_style = :compressed
+output_style = :nested
 environment = :production

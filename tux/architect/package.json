@@ -1,0 +1,71 @@
+{
+    "name": "tux",
+    "description": "TUX components bundle.",
+    "version": "1.0.0",
+    "type": "code",
+    "creator": "Andrea Cammarata",
+    "compatVersion": "1.0.0",
+    "architect": {
+        "local": true,
+    	"compatFrameworks": [
+	        "touch22"
+	    ],
+	    "requires": [],
+	    "classes": [
+	        {
+	            "className": "Ext.tux.field.Container",
+	            "definition": "field/Container.js",
+	            "js": [
+	                "field/Container.js"
+	            ],
+	            "css": [
+			        "tux.css"
+			    ]
+	        },
+	        {
+	            "className": "Ext.tux.progressbar.ProgressBar",
+	            "definition": "progressbar/ProgressBar.js",
+	            "js": [
+	                "progressbar/ProgressBar.js"
+	            ],
+	            "css": [
+			        "tux.css"
+			    ]
+	        },
+	        {
+	            "className": "Ext.tux.field.ProgressBar",
+	            "definition": "field/ProgressBar.js",
+	            "js": [
+	                "field/ProgressBar.js"
+	            ],
+	            "css": [
+			        "tux.css"
+			    ]
+	        },
+	        {
+	            "className": "Ext.tux.progressbar.Radial",
+	            "definition": "progressbar/Radial.js",
+	            "js": [
+	                "progressbar/Radial.js"
+	            ],
+	            "css": [
+			        "tux.css"
+			    ]
+	        },
+	        {
+	            "className": "Ext.tux.dataview.gallery.Gallery",
+	            "definition": "dataview/gallery/Gallery.js",
+	            "js": [
+	                "layout/Stack.js",
+	                "dataview/gallery/DetailCard.js",
+	                "dataview/gallery/component/PhotoStack.js",
+	                "dataview/gallery/Gallery.js"
+	            ],
+	            "css": [
+			        "tux.css"
+			    ]
+	        }
+	    ]
+	},
+	"css": []
+}

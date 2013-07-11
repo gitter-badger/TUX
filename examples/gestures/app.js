@@ -1,7 +1,7 @@
 //<debug>
 Ext.Loader.setPath({
     'Ext': '../../touch/src',
-    'Ext.tux': '../../tux/src/js',
+    'Ext.tux': '../../tux/src',
     'Gestures': 'app'
 });
 //</debug>
