@@ -257,11 +257,16 @@ Ext.define('Ext.data.Connection', {
      * __Note:__ This will be used
      * instead of params for the post data. Any params will be appended to the URL.
      *
+     * @param {Array} options.binaryData An array of bytes to submit in binary form. Any params will be appended to the URL. Returned data will be assumed to be a byte array or ArrayBuffer and placed in responseBytes. Other response types (e.g. xml / json) will not be provided.
+     * 
+     * __Note:__ This will be used instead
+     * of params for the post data. Any params will be appended to the URL.
+     * 
      * @param {Boolean} options.disableCaching True to add a unique cache-buster param to GET requests.
      *
      * @return {Object/null} The request object. This may be used to cancel the request.
      */
-    request : function(options) {
+    request: function(options) {
         options = options || {};
         var me = this,
             scope = options.scope || window,
@@ -500,11 +505,27 @@ Ext.define('Ext.data.Connection', {
         //</debug>
 
         // check for xml or json data, and make sure json data is encoded
-        data = options.rawData || options.xmlData || jsonData || null;
+        data = options.rawData || options.binaryData || options.xmlData || jsonData || null;
         if (jsonData && !Ext.isPrimitive(jsonData)) {
             data = Ext.encode(data);
         }
-
+        
+        // Check for binary data. Transform if needed
+        if (options.binaryData) {
+            //<debug>
+            if (!Ext.isArray(options.binaryData)) {
+                Ext.Logger.warn("Binary submission data must be an array of byte values! Instead got " + typeof(options.binaryData));
+            }
+            //</debug>
+            if (data instanceof Array) {
+                data = (new Uint8Array(options.binaryData));
+            }
+            if (data instanceof Uint8Array) {
+                // Note: Newer chrome version (v22 and up) warn that it is deprecated to send the ArrayBuffer and to send the ArrayBufferView instead. For FF this fails so for now send the ArrayBuffer.
+                data = data.buffer; //  send the underlying buffer, not the view, since that's not supported on versions of chrome older than 22
+            }
+        }
+        
         // make sure params are a url encoded string and include any extraParams if specified
         if (Ext.isObject(params)) {
             params = Ext.Object.toQueryString(params);
@@ -628,7 +649,7 @@ Ext.define('Ext.data.Connection', {
             }
             headers['Content-Type'] = contentType;
         }
-
+        
         if (((me.getUseDefaultXhrHeader() && options.useDefaultXhrHeader !== false) || options.useDefaultXhrHeader) && !headers['X-Requested-With']) {
             headers['X-Requested-With'] = me.getDefaultXhrHeader();
         }
@@ -644,7 +665,16 @@ Ext.define('Ext.data.Connection', {
         } catch(e) {
             me.fireEvent('exception', key, header);
         }
-
+        
+        // If we're posting binary data, set the response type to receive binary data
+        if (options.binaryData) {
+            try {
+                xhr.responseType = "arraybuffer";
+            } catch (e) {
+                // nothing to do. We're still continuing with the request.
+            }
+        }
+        
         if (options.withCredentials) {
             xhr.withCredentials = options.withCredentials;
         }
@@ -851,7 +881,10 @@ Ext.define('Ext.data.Connection', {
     createResponse : function(request) {
         var xhr = request.xhr,
             headers = {},
-            lines, count, line, index, key, response;
+            lines, count, line, index, key, response,
+            // if we posted binary, we expect binary back. Some response fields won't exist 
+            // (and may be defined as exceptions by the browser).
+            binaryResponse = !!request.options.binaryData;
 
         //we need to make this check here because if a request times out an exception is thrown
         //when calling getAllResponseHeaders() because the response never came back to populate it
@@ -878,7 +911,6 @@ Ext.define('Ext.data.Connection', {
 
         request.xhr = null;
         delete request.xhr;
-
         response = {
             request: request,
             requestId : request.id,
@@ -890,8 +922,9 @@ Ext.define('Ext.data.Connection', {
             getAllResponseHeaders : function() {
                 return headers;
             },
-            responseText : xhr.responseText,
-            responseXML : xhr.responseXML
+            responseText : binaryResponse ? null : xhr.responseText,
+            responseXML : binaryResponse ? null : xhr.responseXML,
+            responseBytes : binaryResponse ? xhr.response : null
         };
 
         // If we don't explicitly tear down the xhr reference, IE6/IE7 will hold this in the closure of the

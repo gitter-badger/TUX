@@ -141,9 +141,13 @@ Ext.define('Ext.Map', {
             map.setOptions(newOptions);
         }
         if (newOptions.center && !me.isPainted()) {
-            me.un('painted', 'setMapCenter', this);
-            me.on('painted', 'setMapCenter', this, { delay: 150, single: true, args: [newOptions.center] });
+            me.un('painted', 'doMapCenter', this);
+            me.on('painted', 'doMapCenter', this, { delay: 150, single: true });
         }
+    },
+
+    doMapCenter: function() {
+        this.setMapCenter(this.getMapOptions().center);
     },
 
     getMapOptions: function() {
@@ -240,7 +244,7 @@ Ext.define('Ext.Map', {
 
 	// @private
 	onTilesLoaded: function() {
-		this.fireEvent('maprender', this, this.map);
+		this.fireEvent('maprender', this, this.getMap());
 	},
 
     // @private
@@ -266,15 +270,26 @@ Ext.define('Ext.Map', {
     setMapCenter: function(coordinates) {
         var me = this,
             map = me.getMap(),
+            mapOptions = me.getMapOptions(),
             gm = (window.google || {}).maps;
 
         if (gm) {
             if (!me.isPainted()) {
-                me.un('painted', 'setMapCenter', this);
-                me.on('painted', 'setMapCenter', this, { delay: 150, single: true, args: [coordinates] });
+                me.un('painted', 'doMapCenter', this);
+                me.on('painted', 'doMapCenter', this, { delay: 150, single: true });
                 return;
             }
-            coordinates = coordinates || new gm.LatLng(37.381592, -122.135672);
+            if (!coordinates) {
+                if (map && map.getCenter) {
+                    coordinates = map.getCenter();
+                }
+                else if (mapOptions.hasOwnProperty('center')) {
+                    coordinates = mapOptions.center;
+                }
+                else {
+                    coordinates = new gm.LatLng(37.381592, -122.135672); // Palo Alto
+                }
+            }
 
             if (coordinates && !(coordinates instanceof gm.LatLng) && 'longitude' in coordinates) {
                 coordinates = new gm.LatLng(coordinates.latitude, coordinates.longitude);

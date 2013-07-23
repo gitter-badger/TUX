@@ -28,7 +28,7 @@ Ext.define('Ext.MessageBox', {
          * @cfg
          * @inheritdoc
          */
-        ui: (Ext.os.is.BlackBerry && Ext.os.version.getMajor() === 10) ? 'plain' : 'dark',
+        ui: 'dark',
 
         /**
          * @cfg
@@ -146,6 +146,8 @@ Ext.define('Ext.MessageBox', {
     }, {
         theme: ['Blackberry'],
         ui: 'plain'
+    }, {
+        theme: ['MoutainView']
     }],
 
     statics: {
@@ -261,16 +263,23 @@ Ext.define('Ext.MessageBox', {
                 me.buttonsToolbar.removeAll();
                 me.buttonsToolbar.setItems(newButtons);
             } else {
+                var layout = {
+                    type: 'hbox',
+                    pack: 'center'
+                };
+
+                var isCupertuno = Ext.theme.name == "Cupertino" || Ext.theme.name == "MountainView";
+
                 me.buttonsToolbar = Ext.create('Ext.Toolbar', {
-                    docked     : 'bottom',
+                    docked: 'bottom',
                     defaultType: 'button',
-                    layout     : {
-                        type: 'hbox',
-                        pack: 'center'
+                    defaults: {
+                        flex: (isCupertuno) ? 1 : null
                     },
-                    ui         : me.getUi(),
-                    cls        : me.getBaseCls() + '-buttons',
-                    items      : newButtons
+                    layout: layout,
+                    ui: me.getUi(),
+                    cls: me.getBaseCls() + '-buttons',
+                    items: newButtons
                 });
 
                 me.add(me.buttonsToolbar);

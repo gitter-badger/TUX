@@ -2,10 +2,10 @@
  * This class is used to check if the current device is currently online or not. It has three different implementations:
  *
  * - Sencha Packager
- * - PhoneGap
+ * - Cordova
  * - Simulator
  *
- * Both the Sencha Packager and PhoneGap implementations will use the native functionality to determine if the current
+ * Both the Sencha Packager and Cordova implementations will use the native functionality to determine if the current
  * device is online. The Simulator version will simply use `navigator.onLine`.
  *
  * When this singleton ({@link Ext.device.Connection}) is instantiated, it will automatically decide which version to
@@ -41,7 +41,7 @@ Ext.define('Ext.device.Connection', {
     requires: [
         'Ext.device.Communicator',
         'Ext.device.connection.Sencha',
-        'Ext.device.connection.PhoneGap',
+        'Ext.device.connection.Cordova',
         'Ext.device.connection.Simulator'
     ],
     
@@ -54,8 +54,8 @@ Ext.define('Ext.device.Connection', {
         var browserEnv = Ext.browser.is;
 
         if (browserEnv.WebView) {
-            if (browserEnv.PhoneGap) {
-                return Ext.create('Ext.device.connection.PhoneGap');
+            if (browserEnv.Cordova) {
+                return Ext.create('Ext.device.connection.Cordova');
             }
             else {
                 return Ext.create('Ext.device.connection.Sencha');

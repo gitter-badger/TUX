@@ -737,7 +737,7 @@ Ext.define('Ext.scroll.Scroller', {
             translationX, translationY;
 
         if (this.isAxisEnabled('x')) {
-            if (typeof x != 'number') {
+            if (isNaN(x) || typeof x != 'number') {
                 x = position.x;
             }
             else {
@@ -751,7 +751,7 @@ Ext.define('Ext.scroll.Scroller', {
         }
 
         if (this.isAxisEnabled('y')) {
-            if (typeof y != 'number') {
+            if (isNaN(y) || typeof y != 'number') {
                 y = position.y;
             }
             else {
@@ -1029,11 +1029,15 @@ Ext.define('Ext.scroll.Scroller', {
             velocity = maxAbsVelocity;
         }
 
+        if (Ext.browser.is.IE) {
+            velocity *= 2;
+        }
+
         easing = this.getMomentumEasing()[axis];
         easing.setConfig({
             startTime: dragEndTime,
             startValue: -currentPosition,
-            endValue: -(currentPosition - velocity * 1000),
+            startVelocity: velocity * 1.5,
             minMomentumValue: -maxPosition,
             maxMomentumValue: 0
         });

@@ -35,6 +35,15 @@
 
     max-width: 100%;
 
+    &.x-title-align-left {
+      padding-left: 10px;
+    }
+
+
+    &.x-title-align-right {
+      padding-right: 10px;
+    }
+
     .x-innerhtml {
         @include ellipsis;
     }

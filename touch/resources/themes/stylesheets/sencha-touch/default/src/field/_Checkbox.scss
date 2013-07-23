@@ -19,24 +19,26 @@
     line-height: 1.6em;
 }
 
-.x-field-checkbox .x-input-el {
-    position: relative;
-
-    &:after {
+.x-field-checkbox .x-field-mask,
+.x-field-radio .x-field-mask {
+    &::after {
         @include checkmark($form-light);
     }
+}
 
-    &:checked:after {
-        @include checkmark($active-color);
-    }
+.x-input-checkbox,
+.x-input-radio {
+    visibility: hidden;
+}
+
+.x-input-el:checked + .x-field-mask::after {
+    color: $active-color;
 }
 
 .x-item-disabled {
     &.x-field-checkbox {
-        .x-input-el {
-            &:checked:after {
-                background: mix($form-light, $active-color, 60);
-            }
+        .x-input-checkbox:checked + .x-field-mask::after {
+            color: mix($form-light, $active-color, 60);
         }
     }
 }

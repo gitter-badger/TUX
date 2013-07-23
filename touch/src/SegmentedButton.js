@@ -89,7 +89,11 @@ Ext.define('Ext.SegmentedButton', {
          * @cfg
          * @inheritdoc
          */
-        defaultType: 'button'
+        defaultType: 'button',
+
+        defaults: {
+            flex: 1
+        }
     },
 
     /**

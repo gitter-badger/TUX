@@ -70,6 +70,16 @@ Ext.define('Ext.AnimationQueue', {
         this.whenIdle = bind(this.whenIdle, this);
         this.processIdleQueueItem = bind(this.processIdleQueueItem, this);
         this.processTaskQueueItem = bind(this.processTaskQueueItem, this);
+
+
+        // iOS has a nasty bug which causes pending requestAnimationFrame to not release
+        // the callback when the WebView is switched back and forth from / to being background process
+        // We use a watchdog timer to workaround this, and restore the pending state correctly if this happens
+        // This timer has to be set as an interval from the very beginning and we have to keep it running for
+        // as long as the app lives, setting it later doesn't seem to work
+        if (Ext.os.is.iOS) {
+            setInterval(this.watch, 500);
+        }
     },
 
     /**
@@ -102,6 +112,12 @@ Ext.define('Ext.AnimationQueue', {
         }
     },
 
+    watch: function() {
+        if (this.isRunning && Date.now() - this.lastRunTime >= 500) {
+            this.run();
+        }
+    },
+
     run: function() {
         if (!this.isRunning) {
             return;
@@ -110,6 +126,7 @@ Ext.define('Ext.AnimationQueue', {
         var queue = this.runningQueue,
             i, ln;
 
+        this.lastRunTime = Date.now();
         this.frameStartTime = Ext.performance.now();
 
         queue.push.apply(queue, this.queue);
@@ -144,6 +161,7 @@ Ext.define('Ext.AnimationQueue', {
 
     doStart: function() {
         this.animationFrameId = requestAnimationFrame(this.run);
+        this.lastRunTime = Date.now();
     },
 
     doIterate: function() {
@@ -301,17 +319,9 @@ Ext.define('Ext.AnimationQueue', {
             this.invoke(listener);
             this.processTaskQueue();
         }
-    }
-}, function() {
-    /*
-        Global FPS indicator. Add ?showfps to use in any application. Note that this REQUIRES true requestAnimationFrame
-        to be accurate.
-     */
-    //<debug>
-    var paramsString = window.location.search.substr(1),
-        paramsArray = paramsString.split("&");
+    },
 
-    if (paramsArray.indexOf("showfps") !== -1) {
+    showFps: function() {
         if (!Ext.trueRequestAnimationFrames) {
             alert("This browser does not support requestAnimationFrame. The FPS listed will not be accurate");
         }
@@ -393,34 +403,49 @@ Ext.define('Ext.AnimationQueue', {
                     style: 'background-color: green; color: white; text-align: center; line-height: 50px;'
                 }
             ]);
-
-            var currentFps = Ext.getCmp('__currentFps'),
-                averageFps = Ext.getCmp('__averageFps'),
-                minFps = Ext.getCmp('__minFps'),
-                maxFps = Ext.getCmp('__maxFps'),
-                min = 1000,
-                max = 0,
-                count = 0,
-                sum = 0;
-
-            Ext.AnimationQueue.onFpsChanged = function(fps) {
-                count++;
-
-                if (!(count % 10)) {
-                    min = 1000;
-                    max = 0;
-                }
-
-                sum += fps;
-                min = Math.min(min, fps);
-                max = Math.max(max, fps);
-                currentFps.setHtml(Math.round(fps));
-                averageFps.setHtml(Math.round(sum / count));
-                minFps.setHtml(Math.round(min));
-                maxFps.setHtml(Math.round(max));
-            };
+            Ext.AnimationQueue.resetFps();
         });
 
+    },
+
+    resetFps: function() {
+        var currentFps = Ext.getCmp('__currentFps'),
+            averageFps = Ext.getCmp('__averageFps'),
+            minFps = Ext.getCmp('__minFps'),
+            maxFps = Ext.getCmp('__maxFps'),
+            min = 1000,
+            max = 0,
+            count = 0,
+            sum = 0;
+
+        Ext.AnimationQueue.onFpsChanged = function(fps) {
+            count++;
+
+            if (!(count % 10)) {
+                min = 1000;
+                max = 0;
+            }
+
+            sum += fps;
+            min = Math.min(min, fps);
+            max = Math.max(max, fps);
+            currentFps.setHtml(Math.round(fps));
+            averageFps.setHtml(Math.round(sum / count));
+            minFps.setHtml(Math.round(min));
+            maxFps.setHtml(Math.round(max));
+        };
+    }
+}, function() {
+    /*
+        Global FPS indicator. Add ?showfps to use in any application. Note that this REQUIRES true requestAnimationFrame
+        to be accurate.
+     */
+    //<debug>
+    var paramsString = window.location.search.substr(1),
+        paramsArray = paramsString.split("&");
+
+    if (paramsArray.indexOf("showfps") !== -1) {
+        Ext.AnimationQueue.showFps();
     }
     //</debug>
 

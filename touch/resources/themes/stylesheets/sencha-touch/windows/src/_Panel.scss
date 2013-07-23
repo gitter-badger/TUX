@@ -189,6 +189,14 @@
         .x-button-label {
             color: #000 !important;
         }
+
+        &.x-item-disabled {
+            border-color: #bbb !important;
+
+            .x-button-label {
+                color: #bbb !important;
+            }
+        }
     }
 
     .x-button-pressing {

@@ -32,7 +32,7 @@
  *
  * [getting_started]: #!/guide/getting_started
  */
-Ext.setVersion('touch', '2.2.0-b2');
+Ext.setVersion('touch', '2.3.0-b1');
 
 Ext.apply(Ext, {
     /**
@@ -59,7 +59,7 @@ Ext.apply(Ext, {
     },
 
     /**
-     * Generates unique ids. If the element already has an `id`, it is unchanged.
+     * Generates unique ids. If the element is passes and it already has an `id`, it is unchanged.
      * @param {Mixed} el (optional) The element to generate an id for.
      * @param {String} [prefix=ext-gen] (optional) The `id` prefix.
      * @return {String} The generated `id`.
@@ -72,16 +72,16 @@ Ext.apply(Ext, {
         el = Ext.getDom(el) || {};
 
         if (el === document || el === document.documentElement) {
-            el.id = 'ext-application';
+            el.id = 'ext-app';
         }
         else if (el === document.body) {
-            el.id = 'ext-viewport';
+            el.id = 'ext-body';
         }
         else if (el === window) {
             el.id = 'ext-window';
         }
 
-        el.id = el.id || ((prefix || 'ext-element-') + (++Ext.idSeed));
+        el.id = el.id || ((prefix || 'ext-') + (++Ext.idSeed));
 
         return el.id;
     },
@@ -265,13 +265,16 @@ Ext.apply(Ext, {
                         xclass: 'Ext.event.recognizer.LongPress'
                     },
                     swipe: {
-                        xclass: 'Ext.event.recognizer.HorizontalSwipe'
+                        xclass: 'Ext.event.recognizer.Swipe'
                     },
                     pinch: {
                         xclass: 'Ext.event.recognizer.Pinch'
                     },
                     rotate: {
                         xclass: 'Ext.event.recognizer.Rotate'
+                    },
+                    edgeSwipe: {
+                        xclass: 'Ext.event.recognizer.EdgeSwipe'
                     }
                 }
             },
@@ -613,6 +616,21 @@ Ext.apply(Ext, {
                     Ext.require(requires, callback);
                 }
             });
+
+            if (!Ext.microloaded && navigator.userAgent.match(/IEMobile\/10\.0/)) {
+                var msViewportStyle = document.createElement("style");
+                msViewportStyle.appendChild(
+                    document.createTextNode(
+                        "@media screen and (orientation: portrait) {" +
+                            "@-ms-viewport {width: 320px !important;}" +
+                        "}" +
+                        "@media screen and (orientation: landscape) {" +
+                            "@-ms-viewport {width: 560px !important;}" +
+                        "}"
+                    )
+                );
+                head.appendChild(msViewportStyle);
+            }
         });
 
         function addMeta(name, content) {
@@ -648,6 +666,7 @@ Ext.apply(Ext, {
             startupImage = config.startupImage || {},
             statusBarStyle = config.statusBarStyle,
             devicePixelRatio = window.devicePixelRatio || 1;
+
 
         if (navigator.standalone) {
             addMeta('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0');
@@ -1337,10 +1356,10 @@ Ext.apply(Ext, {
                 scope: scope
             });
 
-            if (Ext.browser.is.PhoneGap && !Ext.os.is.Desktop) {
+            if ((Ext.browser.is.WebWorks || Ext.browser.is.PhoneGap) && !Ext.os.is.Desktop) {
                 if (!Ext.readyListenerAttached) {
                     Ext.readyListenerAttached = true;
-                    document.addEventListener('deviceready', triggerFn, false);
+                    document.addEventListener(Ext.browser.is.PhoneGap ? 'deviceready' : 'webworksready', triggerFn, false);
                 }
             }
             else {
@@ -1350,7 +1369,24 @@ Ext.apply(Ext, {
                 }
                 else if (!Ext.readyListenerAttached) {
                     Ext.readyListenerAttached = true;
-                    window.addEventListener('DOMContentLoaded', triggerFn, false);
+                    window.addEventListener('DOMContentLoaded', function() {
+                        if (navigator.standalone) {
+                            // When running from Home Screen, the splash screen will not disappear until all
+                            // external resource requests finish.
+                            // The first timeout clears the splash screen
+                            // The second timeout allows inital HTML content to be displayed
+                            setTimeout(function() {
+                                setTimeout(function() {
+                                    triggerFn();
+                                }, 1);
+                            }, 1);
+                        }
+                        else {
+                          setTimeout(function() {
+                              triggerFn();
+                          }, 1);
+                        }
+                    }, false);
                 }
             }
         }

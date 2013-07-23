@@ -183,11 +183,11 @@ Ext.define('Ext.picker.Slot', {
     },
 
     updateShowTitle: function(showTitle) {
-        var title = this.getTitle();
+        var title = this.getTitle(),
+            mode = showTitle ? 'show' : 'hide';
         if (title) {
+            title.on(mode, this.setupBar, this, { single: true, delay: 50 });
             title[showTitle ? 'show' : 'hide']();
-
-            this.setupBar();
         }
     },
 
@@ -307,7 +307,6 @@ Ext.define('Ext.picker.Slot', {
             });
         }
 
-
         scroller.refresh();
         scroller.setSlotSnapSize(barHeight);
         this.setValue(value);
@@ -395,10 +394,6 @@ Ext.define('Ext.picker.Slot', {
     },
 
     doSetValue: function(value, animated) {
-        if (!Ext.isDefined(value)) {
-            return;
-        }
-
         if (!this.rendered) {
             //we don't want to call this until the slot has been rendered
             this._value = value;
@@ -411,18 +406,21 @@ Ext.define('Ext.picker.Slot', {
             index, item;
 
         index = store.findExact(valueField, value);
-        if (index != -1) {
-            item = Ext.get(viewItems[index]);
 
-            this.selectedIndex = index;
-            if (item) {
-                this.scrollToItem(item, (animated) ? {
-                    duration: 100
-                } : false);
-                this.select(this.selectedIndex);
-            }
-
-            this._value = value;
+        if (index == -1) {
+            index = 0;
         }
+
+        item = Ext.get(viewItems[index]);
+
+        this.selectedIndex = index;
+        if (item) {
+            this.scrollToItem(item, (animated) ? {
+                duration: 100
+            } : false);
+            this.select(this.selectedIndex);
+        }
+
+        this._value = value;
     }
 });

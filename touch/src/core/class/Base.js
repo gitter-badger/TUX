@@ -465,7 +465,8 @@ var noArgs = [],
                 enumerables = Ext.enumerables,
                 target = me.prototype,
                 cloneFunction = Ext.Function.clone,
-                name, index, member, statics, names, previous;
+                currentConfig = target.config,
+                name, index, member, statics, names, previous, newConfig, prop;
 
             if (arguments.length === 2) {
                 name = members;
@@ -483,7 +484,16 @@ var noArgs = [],
                         statics = members[name];
                     }
                     else if (name == 'config') {
-                        me.addConfig(members[name], true);
+                        newConfig = members[name];
+                        //<debug error>
+                        for (prop in newConfig) {
+                            if (!(prop in currentConfig)) {
+                                throw new Error("Attempting to override a non-existant config property. This is not " +
+                                    "supported, you must extend the Class.");
+                            }
+                        }
+                        //</debug>
+                        me.addConfig(newConfig, true);
                     }
                     else {
                         names.push(name);
@@ -976,7 +986,6 @@ var noArgs = [],
          * from the current method, for example: `this.callOverridden(arguments)`
          * @return {Object} Returns the result of calling the overridden method
          * @protected
-         * @deprecated Use callParent instead
          */
         callOverridden: function(args) {
             var method = this.callOverridden.caller;

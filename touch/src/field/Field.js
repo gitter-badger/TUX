@@ -143,7 +143,7 @@ Ext.define('Ext.field.Field', {
     },
 
     platformConfig: [{
-        theme: ['Windows'],
+        theme: ['Windows', 'MountainView'],
         labelAlign: 'top'
     }],
 

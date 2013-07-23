@@ -26,6 +26,10 @@
         styleSheets = options.css || [],
         i, ln, path, platform, theme;
 
+    if(options.platform && options.platforms && options.platforms[options.platform] && options.platforms[options.platform].js) {
+        scripts = options.platforms[options.platform].js.concat(scripts);
+    }
+
     if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
         var msViewportStyle = document.createElement("style");
         msViewportStyle.appendChild(
@@ -48,6 +52,8 @@
     if (!window.Ext) {
         window.Ext = {};
     }
+    Ext.microloaded = true;
+
     var filterPlatform = window.Ext.filterPlatform = function(platform) {
         var profileMatch = false,
             ua = navigator.userAgent,
@@ -118,6 +124,9 @@
                     break;
                 case 'ie10':
                     profileMatch = /MSIE 10/.test(ua);
+                    break;
+                case 'tizen':
+                    profileMatch = /Tizen/.test(ua);
                     break;
                 case 'firefox':
                     profileMatch = /Firefox/.test(ua);

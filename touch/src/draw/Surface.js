@@ -292,6 +292,7 @@ Ext.define('Ext.draw.Surface', {
             component.element.dom.appendChild(this.element.dom);
         }
     },
+
     /**
      * Add a Sprite to the surface.
      * You can put any number of object as parameter.
@@ -312,16 +313,14 @@ Ext.define('Ext.draw.Surface', {
         var me = this,
             args = Array.prototype.slice.call(arguments),
             argIsArray = Ext.isArray(args[0]),
-            sprite, items, i, ln, results, group, groups;
+            results = [],
+            sprite, sprites, items, i, ln, group, groups;
 
-        items = argIsArray ? args[0] : args;
-        results = [];
-        for (i = 0, ln = items.length; i < ln; i++) {
-            sprite = items[i];
-            if (!items[i]) {
-                continue;
-            }
-            sprite = me.prepareItems(args[0])[0];
+        items = Ext.Array.clean(argIsArray ? args[0] : args);
+        sprites = me.prepareItems(items);
+
+        for (i = 0, ln = sprites.length; i < ln; i++) {
+            sprite = sprites[i];
             groups = sprite.group;
             if (groups.length) {
                 for (i = 0, ln = groups.length; i < ln; i++) {
@@ -338,6 +337,7 @@ Ext.define('Ext.draw.Surface', {
 
         me.dirtyZIndex = true;
         me.setDirty(true);
+
         if (!argIsArray && results.length === 1) {
             return results[0];
         } else {
@@ -415,6 +415,7 @@ Ext.define('Ext.draw.Surface', {
     prepareItems: function (items) {
         items = [].concat(items);
         // Make sure defaults are applied and item is initialized
+
         var me = this,
             item, i, ln, j,
             removeSprite = function (sprite) {
@@ -428,7 +429,7 @@ Ext.define('Ext.draw.Surface', {
                 item = items[i] = me.createItem(item);
             }
             for (j = 0; j < item.group.length; j++) {
-                me.getGroup(item.group[i]).add(item);
+                me.getGroup(item.group[j]).add(item);
             }
             item.on('beforedestroy', removeSprite, me);
         }

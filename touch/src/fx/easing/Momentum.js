@@ -3,29 +3,45 @@
  */
 Ext.define('Ext.fx.easing.Momentum', {
 
-    extend: 'Ext.fx.easing.Linear',
+    extend: 'Ext.fx.easing.Abstract',
 
     config: {
-        duration: 3000
+        acceleration: 30,
+        friction: 0,
+        startVelocity: 0
     },
 
-    getEasingValue: function() {
-        var deltaTime = Date.now() - this.getStartTime(),
-            duration = this.getDuration(),
-            maxEasingValue = 0.99,
-            easingValue = 1 - Math.exp(-deltaTime / (1 + duration / 6));
+    alpha: 0,
 
-        if (deltaTime >= duration || easingValue >= maxEasingValue) {
-            this.isEnded = true;
-            return maxEasingValue;
-        }
+    updateFriction: function(friction) {
+        var theta = Math.log(1 - (friction / 10));
 
-        return easingValue;
+        this.theta = theta;
+
+        this.alpha = theta / this.getAcceleration();
+    },
+
+    updateStartVelocity: function(velocity) {
+        this.velocity = velocity * this.getAcceleration();
+    },
+
+    updateAcceleration: function(acceleration) {
+        this.velocity = this.getStartVelocity() * acceleration;
+
+        this.alpha = this.theta / acceleration;
     },
 
     getValue: function() {
-        var startValue = this.getStartValue();
+        return this.getStartValue() - this.velocity * (1 - this.getFrictionFactor()) / this.theta;
+    },
 
-        return startValue + this.getEasingValue() * (this.getEndValue() - startValue);
+    getFrictionFactor: function() {
+        var deltaTime = Ext.Date.now() - this.getStartTime();
+
+        return Math.exp(deltaTime * this.alpha);
+    },
+
+    getVelocity: function() {
+        return this.getFrictionFactor() * this.velocity;
     }
 });

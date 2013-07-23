@@ -35,7 +35,7 @@
  * In this configuration we set `pie` as the type for the series, set an object with specific style properties for highlighting options
  * (triggered when hovering elements). We also set true to `showInLegend` so all the pie slices can be represented by a legend item.
  * We set `data1` as the value of the field to determine the angle span for each pie slice. We also set a label configuration object
- * where we set the field name of the store field to be renderer as text for the label. The labels will also be displayed rotated.
+ * where we set the field name of the store field to be rendered as text for the label. The labels will also be displayed rotated.
  * We set `contrast` to `true` to flip the color of the label if it is to similar to the background color. Finally, we set the font family
  * and size through the `font` parameter.
  *
@@ -83,6 +83,11 @@ Ext.define('Ext.chart.series.Pie', {
          */
         hidden: [],
 
+        /**
+         * @cfg {Number} Allows adjustment of the radius by a spefic perfentage.
+         */
+        radiusFactor: 100,
+
         style: {
 
         }
@@ -96,6 +101,10 @@ Ext.define('Ext.chart.series.Pie', {
 
     getField: function () {
         return this.getXField();
+    },
+
+    applyRadius : function (radius) {
+        return radius * this.getRadiusFactor() * 0.01;
     },
 
     updateLabelData: function () {
@@ -137,7 +146,7 @@ Ext.define('Ext.chart.series.Pie', {
         }
 
         for (i = 0; i < length; i++) {
-            value = items[i].get(field);
+            value = Math.abs(Number(items[i].get(field))) || 0;
             if (!hidden[i]) {
                 sum += value;
             }
@@ -147,14 +156,13 @@ Ext.define('Ext.chart.series.Pie', {
             }
         }
 
-        if (sum === 0) {
-            return;
+        if (sum !== 0) {
+            sum = totalAngle / sum;
         }
-        sum = totalAngle / sum;
         for (i = 0; i < length; i++) {
             sprites[i].setAttributes({
                 startAngle: lastAngle,
-                endAngle: lastAngle = summation[i] * sum,
+                endAngle: lastAngle = (sum ? summation[i] * sum : 0),
                 globalAlpha: 1
             });
         }
@@ -220,7 +228,14 @@ Ext.define('Ext.chart.series.Pie', {
             offsetX = me.getOffsetX(),
             offsetY = me.getOffsetY(),
             sprites = me.sprites, sprite,
+            spriteIndex = 0, rendererData,
             i, spriteCreated = false;
+
+        rendererData = {
+            store: store,
+            field: me.getField(),
+            series: me
+        };
 
         for (i = 0; i < length; i++) {
             sprite = sprites[i];
@@ -238,6 +253,8 @@ Ext.define('Ext.chart.series.Pie', {
                     sprite.bindMarker('labels', me.getLabel());
                 }
                 sprite.setAttributes(this.getStyleByIndex(i));
+                sprite.rendererData = rendererData;
+                sprite.rendererIndex = spriteIndex++;
                 spriteCreated = true;
             }
         }
@@ -257,6 +274,49 @@ Ext.define('Ext.chart.series.Pie', {
         x %= Math.PI * 2;
         b %= Math.PI * 2;
         return x < b;
+    },
+
+    /**
+     * Returns the pie slice for a given angle
+     * @param {Number} angle The angle to search for the slice
+     * @return {Object} An object containing the reocord, sprite, scope etc.
+     */
+    getItemForAngle: function (angle) {
+        var me      = this,
+            sprites = me.getSprites();
+
+        angle %= Math.PI * 2;
+
+        while (angle < 0) {
+            angle += Math.PI * 2;
+        }
+
+        if (sprites) {
+            var store  = me.getStore(),
+                items  = store.getData().items,
+                hidden = me.getHidden(),
+                i      = 0,
+                ln     = store.getCount();
+
+            for (; i < ln; i++) {
+                if(!hidden[i]) {
+                    // Fortunately, the id of items equals the index of it in instances list.
+                    attr = sprites[i].attr;
+
+                    if (attr.startAngle <= angle &&  attr.endAngle >= angle) {
+                        return {
+                            series: me,
+                            sprite: sprites[i],
+                            index: i,
+                            record: items[i],
+                            field: me.getXField()
+                        };
+                    }
+                }
+            }
+        }
+
+        return null;
     },
 
     getItemForPoint: function (x, y) {
@@ -308,7 +368,7 @@ Ext.define('Ext.chart.series.Pie', {
                 hidden = this.getHidden();
             for (var i = 0; i < items.length; i++) {
                 target.push({
-                    name: labelField ? String(items[i].get(labelField))  : (field && field[i]) || this.getId(),
+                    name: labelField ? String(items[i].get(labelField))  : field + " " + i,
                     mark: this.getStyleByIndex(i).fillStyle || this.getStyleByIndex(i).strokeStyle || 'black',
                     disabled: hidden[i],
                     series: this.getId(),

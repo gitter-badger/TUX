@@ -139,12 +139,6 @@ Ext.define('Ext.navigation.View', {
                 direction: 'left'
             }
         }
-
-        // See https://sencha.jira.com/browse/TOUCH-1568
-        // If you do, add to #navigationBar config docs:
-        //
-        //     If you want to add a button on the right of the NavigationBar,
-        //     use the {@link #rightButton} configuration.
     },
 
     /**
@@ -167,23 +161,32 @@ Ext.define('Ext.navigation.View', {
      * @param {Ext.navigation.View} this The component instance\
      */
 
+    platformConfig: [{
+        theme: ['Blackberry'],
+        navigationBar: {
+            splitNavigation: true
+        }
+    }],
+
     // @private
     initialize: function() {
         var me     = this,
             navBar = me.getNavigationBar();
 
         //add a listener onto the back button in the navigationbar
-        navBar.on({
-            back: me.onBackButtonTap,
-            scope: me
-        });
+        if (navBar) {
+            navBar.on({
+                back: me.onBackButtonTap,
+                scope: me
+            });
 
-        me.relayEvents(navBar, 'rightbuttontap');
+            me.relayEvents(navBar, 'rightbuttontap');
 
-        me.relayEvents(me, {
-            add: 'push',
-            remove: 'pop'
-        });
+            me.relayEvents(me, {
+                add: 'push',
+                remove: 'pop'
+            });
+        }
 
         //<debug>
         var layout = me.getLayout();
@@ -223,8 +226,9 @@ Ext.define('Ext.navigation.View', {
     /**
      * Removes the current active view from the stack and sets the previous view using the default animation
      * of this view. You can also pass a {@link Ext.ComponentQuery} selector to target what inner item to pop to.
-     * @param {Number} count The number of views you want to pop.
-     * @return {Ext.Component} The new active item.
+     * @param {Mixed} count If a Number, the number of views you want to pop. If a String, the pops to a matching
+     * component query. If an Object, the pops to a matching view instance.
+     * @return {Ext.Component} The new active item
      */
     pop: function(count) {
         if (this.beforePop(count)) {
@@ -294,6 +298,26 @@ Ext.define('Ext.navigation.View', {
 
         //set the new active item to be the new last item of the stack
         me.remove(innerItems[innerItems.length - 1]);
+
+        // Hide the backButton
+        if (innerItems.length < 3 && this.$backButton) {
+            this.$backButton.hide();
+        }
+
+        // Update the title container
+        if (this.$titleContainer) {
+            //<debug>
+            if (!this.$titleContainer.setTitle) {
+                Ext.Logger.error('You have selected to display a title in a component that does not \
+                    support titles in NavigationView. Please remove the `title` configuration from your \
+                    NavigationView item, or change it to a component that has a `setTitle` method.');
+            }
+            //</debug>
+
+            var item = innerItems[innerItems.length - 2];
+            this.$titleContainer.setTitle((item.getTitle) ? item.getTitle() : item.config.title);
+        }
+
         return this.getActiveItem();
     },
 
@@ -347,6 +371,39 @@ Ext.define('Ext.navigation.View', {
 
         config.view = this;
         config.useTitleForBackButtonText = this.getUseTitleForBackButtonText();
+
+        if (config.splitNavigation) {
+            this.$titleContainer = this.add({
+                docked: 'top',
+                xtype: 'titlebar',
+                ui: 'light',
+                title: this.$currentTitle || ''
+            });
+
+            var containerConfig = (config.splitNavigation === true) ? {} : config.splitNavigation;
+
+            this.$backButtonContainer = this.add(Ext.apply({
+                xtype: 'toolbar',
+                docked: 'bottom'
+            }, containerConfig));
+
+            this.$backButton = this.$backButtonContainer.add({
+                xtype: 'button',
+                text: 'Back',
+                hidden: true,
+                ui: 'back'
+            });
+
+            this.$backButton.on({
+                scope: this,
+                tap: this.onBackButtonTap
+            });
+
+            config = {
+                hidden: true,
+                docked: 'top'
+            };
+        }
 
         return Ext.factory(config, Ext.navigation.Bar, this.getNavigationBar());
     },
@@ -411,15 +468,58 @@ Ext.define('Ext.navigation.View', {
      * @private
      */
     onItemAdd: function(item, index) {
+
+        // Check for title configuration
+        if (item && item.getDocked() && item.config.title === true) {
+            this.$titleContainer = item;
+        }
+
         this.doItemLayoutAdd(item, index);
+
+        var navigaitonBar = this.getInitialConfig().navigationBar;
 
         if (!this.isItemsInitializing && item.isInnerItem()) {
             this.setActiveItem(item);
-            this.getNavigationBar().onViewAdd(this, item, index);
+
+            // Update the navigationBar
+            if (navigaitonBar) {
+                this.getNavigationBar().onViewAdd(this, item, index);
+            }
+
+            // Update the custom backButton
+            if (this.$backButtonContainer) {
+                this.$backButton.show();
+            }
+        }
+
+        if (item && item.isInnerItem()) {
+            // Update the title container title
+            this.updateTitleContainerTitle((item.getTitle) ? item.getTitle() : item.config.title);
         }
 
         if (this.initialized) {
             this.fireEvent('add', this, item, index);
+        }
+    },
+
+    /**
+     * @private
+     * Updates the title of the titleContainer, if it exists
+     */
+    updateTitleContainerTitle: function(title) {
+        if (this.$titleContainer) {
+            //<debug>
+            if (!this.$titleContainer.setTitle) {
+                Ext.Logger.error('You have selected to display a title in a component that does not \
+                    support titles in NavigationView. Please remove the `title` configuration from your \
+                    NavigationView item, or change it to a component that has a `setTitle` method.');
+            }
+            //</debug>
+
+            this.$titleContainer.setTitle(title);
+        }
+        else {
+            this.$currentTitle = title;
         }
     },
 

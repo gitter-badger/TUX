@@ -15,8 +15,8 @@
 
     // Default icon style
     .x-button-icon {
-        width: 26px;
-        height: 26px;
+        width: 1.5em;
+        height: 1.5em;
 
         &:before {
             font-size: 1.6em;
@@ -78,7 +78,7 @@
     .x-button-icon {
         &:before {
             font-size: 1.3em;
-            line-height: 1.1em;
+            line-height: 1.3em;
         }
     }
 }

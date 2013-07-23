@@ -54,10 +54,9 @@ Ext.define("Ext.chart.series.sprite.Bar", {
             attr = me.attr,
             labelCfg = me.labelCfg || (me.labelCfg = {}),
             surfaceMatrix = me.surfaceMatrix,
-            labelX, labelY,
             labelOverflowPadding = attr.labelOverflowPadding,
-            halfWidth,
-            labelBox;
+            labelPosition = attr.labelPosition,
+            labelY, halfWidth, labelBox;
 
         labelBox = this.getMarkerBBox('labels', labelId, true);
         labelCfg.text = text;
@@ -76,18 +75,18 @@ Ext.define("Ext.chart.series.sprite.Bar", {
         if (dataStartY > dataY) {
             halfWidth = -halfWidth;
         }
-        labelX = dataX;
-        labelY = dataY - halfWidth;
-        labelCfg.x = surfaceMatrix.x(labelX, labelY);
-        labelCfg.y = surfaceMatrix.y(labelX, labelY);
-        labelX = dataX;
-        labelY = dataY + halfWidth;
-        labelCfg.calloutPlaceX = surfaceMatrix.x(labelX, labelY);
-        labelCfg.calloutPlaceY = surfaceMatrix.y(labelX, labelY);
-        labelX = dataX;
-        labelY = dataY;
-        labelCfg.calloutStartX = surfaceMatrix.x(labelX, labelY);
-        labelCfg.calloutStartY = surfaceMatrix.y(labelX, labelY);
+
+        labelY = (labelPosition == 'start') ? dataStartY + halfWidth : dataY - halfWidth;
+        labelCfg.x = surfaceMatrix.x(dataX, labelY);
+        labelCfg.y = surfaceMatrix.y(dataX, labelY);
+
+        labelY = (labelPosition == 'start') ? dataStartY - halfWidth : dataY + halfWidth;
+        labelCfg.calloutPlaceX = surfaceMatrix.x(dataX, labelY);
+        labelCfg.calloutPlaceY = surfaceMatrix.y(dataX, labelY);
+
+        labelY = (labelPosition == 'start') ? dataStartY : dataY;
+        labelCfg.calloutStartX = surfaceMatrix.x(dataX, labelY);
+        labelCfg.calloutStartY = surfaceMatrix.y(dataX, labelY);
         if (dataStartY > dataY) {
             halfWidth = -halfWidth;
         }
@@ -96,16 +95,20 @@ Ext.define("Ext.chart.series.sprite.Bar", {
         } else {
             labelCfg.callout = 1;
         }
+
         me.putMarker('labels', labelCfg, labelId);
     },
 
     drawBar: function (ctx, surface, clip, left, top, right, bottom, index) {
-        var itemCfg = this.itemCfg || (this.itemCfg = {});
+        var itemCfg = this.itemCfg || (this.itemCfg = {}),
+            changes;
+
         itemCfg.x = left;
         itemCfg.y = top;
         itemCfg.width = right - left;
         itemCfg.height = bottom - top;
         itemCfg.radius = this.attr.radius;
+
         if (this.attr.renderer) {
             changes = this.attr.renderer.call(this, this, itemCfg, {store:this.getStore()}, index);
             Ext.apply(itemCfg, changes);
@@ -163,5 +166,33 @@ Ext.define("Ext.chart.series.sprite.Bar", {
                 translationY: surfaceMatrix.y(center, top)
             }, i, true);
         }
+    },
+
+    //@inheritdoc
+    getIndexNearPoint: function (x, y) {
+        var sprite = this,
+            attr = sprite.attr,
+            dataX = attr.dataX,
+            surface = sprite.getParent(),
+            surfaceRegion = surface.getRegion(),
+            surfaceHeight = surfaceRegion[3],
+            hitX, hitY, index = -1;
+
+        // The "items" sprites that draw the bars work in a reverse vertical coordinate system
+        // starting with 0 at the bottom and increasing the Y coordinate toward the top.
+        // See also Ext.chart.series.Bar.getItemForPoint(x,y) regarding the chart's InnerPadding.
+        //
+        // TODO: Cleanup the bar sprites.
+        hitX = x;
+        hitY = surfaceHeight - y;
+
+        for (var i = 0; i < dataX.length; i++) {
+            var bbox = sprite.getMarkerBBox("items", i);
+            if (hitX >= bbox.x && hitX <= (bbox.x + bbox.width) && hitY >= bbox.y && hitY <= (bbox.y + bbox.height)) {
+                index = i;
+            }
+        }
+        return index;
     }
+
 });

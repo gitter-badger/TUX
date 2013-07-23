@@ -30,6 +30,12 @@
             --ignore=${classpath.excludes}
             --include-preprocessor-tags=true
             --options=debug:true,product:touch,minVersion:3,logger:yes,charts:yes
+                exclude
+                    -namespace=Ext.device
+                and
+                exclude
+                    -file=src/ux
+                and
                 concatenate
                     --output-file=${build.dir}/sencha-touch-all-debug.js
                 and
@@ -60,6 +66,12 @@
             --options=debug:false,logger:no
                 union
                     +all
+                and
+                exclude
+                    -namespace=Ext.device
+                and
+                exclude
+                    -file=src/ux
                 and
                 concatenate
                     +yui

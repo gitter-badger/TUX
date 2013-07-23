@@ -2,12 +2,12 @@
  * Provides a cross device way to show notifications. There are three different implementations:
  *
  * - Sencha Packager
- * - PhoneGap
+ * - Cordova
  * - Simulator
  *
  * When this singleton is instantiated, it will automatically use the correct implementation depending on the current device.
  *
- * Both the Sencha Packager and PhoneGap versions will use the native implementations to display the notification. The
+ * Both the Sencha Packager and Cordova versions will use the native implementations to display the notification. The
  * Simulator implementation will use {@link Ext.MessageBox} for {@link #show} and a simply animation when you call {@link #vibrate}.
  *
  * ## Examples
@@ -40,7 +40,7 @@ Ext.define('Ext.device.Notification', {
 
     requires: [
         'Ext.device.Communicator',
-        'Ext.device.notification.PhoneGap',
+        'Ext.device.notification.Cordova',
         'Ext.device.notification.Sencha',
         'Ext.device.notification.Simulator'
     ],
@@ -49,8 +49,8 @@ Ext.define('Ext.device.Notification', {
         var browserEnv = Ext.browser.is;
 
         if (browserEnv.WebView) {
-            if (browserEnv.PhoneGap) {
-                return Ext.create('Ext.device.notification.PhoneGap');
+            if (browserEnv.Cordova) {
+                return Ext.create('Ext.device.notification.Cordova');
             }
             else {
                 return Ext.create('Ext.device.notification.Sencha');

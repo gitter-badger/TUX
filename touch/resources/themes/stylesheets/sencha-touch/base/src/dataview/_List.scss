@@ -111,7 +111,6 @@
       content: ". .";
       color: transparent;
       position: absolute;
-      font-size: 200%;
       left: 0px;
       word-spacing: 3000px;
       opacity: 0;
@@ -149,4 +148,10 @@
     .x-list-container {
         white-space: nowrap !important;
     }
+}
+
+.x-list-item-dragging {
+    border-bottom: 1px solid #ccc;
+    background: #fff !important;
+    z-index: 1;
 }

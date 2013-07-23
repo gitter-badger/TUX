@@ -276,6 +276,20 @@ Ext.define('Ext.picker.Picker', {
             ui: 'round',
             text: ''
         }
+    }, {
+        theme: ['Cupertino'],
+        toolbar: {
+            ui: 'black'
+        }
+    }, {
+        theme: ['MountainView'],
+        toolbarPosition: 'bottom',
+        useTitles: true,
+        toolbar: {
+            defaults: {
+                flex: 1
+            }
+        }
     }],
 
     initialize: function() {

@@ -1,5 +1,5 @@
 /**
- * Provides a way to send push notifications to a device. Currently only available on iOS.
+ * Provides a way to send push notifications to a device.
  *
  * # Example
  *
@@ -19,6 +19,19 @@
  *         }
  *     });
  *
+ *
+ * ## Sencha Cmd
+ *
+ * Currently only available on iOS for apps packaged with Sencha Cmd.
+ *
+ *
+ * ## Cordova / PhoneGap
+ *
+ * For apps packaged with Cordova or PhoneGap, Ext.device.Push currently supports iOS and Android via the [PushPlugin](https://github.com/phonegap-build/PushPlugin).
+ *
+ * Be sure to include that plugin in your project; Ext.device.Push simply normalizes the interface for using notifications in a Sencha Touch application.
+ *
+ *
  * @mixins Ext.device.push.Abstract
  *
  * @aside guide native_apis
@@ -28,7 +41,8 @@ Ext.define('Ext.device.Push', {
 
     requires: [
         'Ext.device.Communicator',
-        'Ext.device.push.Sencha'
+        'Ext.device.push.Sencha',
+        'Ext.device.push.Cordova'
     ],
 
     constructor: function() {
@@ -39,7 +53,7 @@ Ext.define('Ext.device.Push', {
                 return Ext.create('Ext.device.push.Sencha');
             }
             else {
-                return Ext.create('Ext.device.push.Abstract');
+                return Ext.create('Ext.device.push.Cordova');
             }
         }
         else {

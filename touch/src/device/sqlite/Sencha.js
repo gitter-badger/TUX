@@ -3,32 +3,34 @@
  */
 Ext.define('Ext.device.sqlite.Sencha', {
     /**
-     * Returns a {@link Ext.device.SQLite.Database} instance. If the database with specified name does not exist, it will be created.
-     * If the creationCallback is provided, the database is created with the empty string as its version regardless of the specified version.
+     * Returns a {@link Ext.device.SQLite.Database} instance.
+     * If the database with specified name does not exist, it will be created.
+     * If the creationCallback is provided,
+     * the database is created with the empty string as its version regardless of the specified version.
      *
      * @param {Object} config
      * The object which contains the following config options:
      *
-     * @param {String} config.name
-     * The name of the database to open. This is required.
+     * @param {String} config.name This is required.
+     * The name of the database to open.
      *
-     * @param {String} config.version
-     * The version of the database to open. This is required.
+     * @param {String} config.version This is required.
+     * The version of the database to open.
      *
-     * @param {String} config.displayName
-     * The display name of the database to open. This is required.
+     * @param {String} config.displayName This is required.
+     * The display name of the database to open.
      *
-     * @param {Number} config.estimatedSize
-     * The estimated size of the database to open. This is required.
+     * @param {Number} config.estimatedSize This is required.
+     * The estimated size of the database to open.
      *
-     * @param {Function} config.creationCallback
-     * The callback to be called when the database has been created. This is optional.
+     * @param {Function} config.creationCallback This is optional.
+     * The callback to be called when the database has been created.
      *
      * @param {Ext.device.SQLite.Database} config.creationCallback.database
      * The created database with the empty string as its version regardless of the specified version.
      *
-     * @param {Object} config.scope
-     * The scope object. This is optional.
+     * @param {Object} config.scope This is optional.
+     * The scope object.
      *
      * @return {Ext.device.SQLite.Database}
      * The opened database, null if an error occured.
@@ -102,7 +104,7 @@ Ext.define('Ext.device.sqlite.Sencha', {
          * Returns the current version of the database.
          *
          * @return {String}
-         * The current database version.
+         * The database current version.
          */
         getVersion: function() {
             return Ext.device.Communicator.send({
@@ -113,22 +115,22 @@ Ext.define('Ext.device.sqlite.Sencha', {
         },
 
         /**
-         * Performs a {@link Ext.device.SQLite.SQLTransaction} instance with a read/write mode.
+         * Performs a {@link Ext.device.SQLite.SQLTransaction} instance in a read/write mode.
          *
          * @param {Object} config
          * The object which contains the following config options:
          *
-         * @param {Function} config.callback
-         * The callback to be called when the transaction has been created. This is required.
+         * @param {Function} config.callback This is required.
+         * The callback to be called when the transaction has been created.
          *
          * @param {Ext.device.SQLite.SQLTransaction} config.callback.transaction
          * The created transaction.
          *
-         * @param {Function} config.success
-         * The callback to be called when the transaction has been successfully commited. This is optional.
+         * @param {Function} config.success This is optional.
+         * The callback to be called when the transaction has been successfully commited.
          *
-         * @param {Function} config.failure
-         * The callback to be called when an error occurred and the transaction has been rolled back. This is optional.
+         * @param {Function} config.failure This is optional.
+         * The callback to be called when an error occurred and the transaction has been rolled back.
          *
          * @param {Object} config.failure.error
          * The occurred error.
@@ -144,7 +146,7 @@ Ext.define('Ext.device.sqlite.Sencha', {
 
             var me = this;
             Ext.device.Communicator.send({
-                command: 'SQLite#beginTransaction',
+                command: 'SQLite#createTransaction',
                 databaseId: this.id,
                 readOnly: config.readOnly,
                 callbacks: {
@@ -153,11 +155,17 @@ Ext.define('Ext.device.sqlite.Sencha', {
                         var error = null;
                         var transaction = Ext.create('Ext.device.SQLite.SQLTransaction', id);
 
-                        if (config.preflight) {
+                        error = Ext.device.Communicator.send({
+                            command: 'SQLite#beginTransaction',
+                            sync: true,
+                            transactionId: transaction.id
+                        });
+
+                        if (!error && config.preflight) {
                             error = config.preflight.call(config.scope || this);
                         }
 
-                        if (!(exception || error)) {
+                        if (!error) {
                             try {
                                 transaction.active = true;
                                 config.callback.call(config.scope || this, transaction); // may throw exception
@@ -214,55 +222,37 @@ Ext.define('Ext.device.sqlite.Sencha', {
                         }
 
                         if (!(exception || error)) {
-                            Ext.device.Communicator.send({
+                            error = Ext.device.Communicator.send({
                                 command: 'SQLite#commitTransaction',
-                                transactionId: transaction.id,
-                                callbacks: {
-                                    success: function() {
-                                        if (config.postflight) {
-                                            config.postflight.call(config.scope || this);
-                                        }
-
-                                        if (config.success) {
-                                            config.success.call(config.scope || this);
-                                        }
-                                    },
-                                    failure: function(error) {
-                                        statements.splice(0, statements.length);
-
-                                        Ext.device.Communicator.send({
-                                            command: 'SQLite#rollbackTransaction',
-                                            transactionId: transaction.id,
-                                            callbacks: {
-                                                callback: function() {
-                                                    if (config.failure) {
-                                                        config.failure.call(config.scope || this, error);
-                                                    }
-                                                }
-                                            },
-                                            scope: config.scope || this
-                                        });
-                                    }
-                                },
-                                scope: config.scope || this
+                                sync: true,
+                                transactionId: transaction.id
                             });
-                        } else {
+
+                            if (!error) {
+                                if (config.postflight) {
+                                    config.postflight.call(config.scope || this);
+                                }
+
+                                if (config.success) {
+                                    config.success.call(config.scope || this);
+                                }
+                            }
+                        }
+
+                        if (exception || error) {
                             statements.splice(0, statements.length);
 
                             Ext.device.Communicator.send({
                                 command: 'SQLite#rollbackTransaction',
-                                transactionId: transaction.id,
-                                callbacks: {
-                                    callback: function() {
-                                        if (exception) {
-                                            throw exception;
-                                        } else if (config.failure) {
-                                            config.failure.call(config.scope || this, error);
-                                        }
-                                    }
-                                },
-                                scope: config.scope || this
+                                sync: true,
+                                transactionId: transaction.id
                             });
+
+                            if (exception) {
+                                throw exception;
+                            } else if (config.failure) {
+                                config.failure.call(config.scope || this, error);
+                            }
                         }
                     },
                     failure: function(error) {
@@ -276,7 +266,8 @@ Ext.define('Ext.device.sqlite.Sencha', {
         },
 
         /**
-         * Works same as {@link Ext.device.SQLite.Database#transaction}, but performs a {@link Ext.device.SQLite.SQLTransaction} instance with a read-only mode.
+         * Works the same way as {@link Ext.device.SQLite.Database#transaction},
+         * but performs a {@link Ext.device.SQLite.SQLTransaction} instance in a read-only mode.
          */
         readTransaction: function(config) {
             this.transaction(Ext.apply(config, {
@@ -285,28 +276,29 @@ Ext.define('Ext.device.sqlite.Sencha', {
         },
 
         /**
-         * Verifies and changes the version of the database at the same time as doing a schema update with a {@link Ext.device.SQLite.SQLTransaction} instance.
+         * Verifies and changes the version of the database at the same time
+         * as doing a schema update with a {@link Ext.device.SQLite.SQLTransaction} instance.
          *
          * @param {Object} config
          * The object which contains the following config options:
          *
-         * @param {String} config.oldVersion
-         * The current version of the database. This is required.
+         * @param {String} config.oldVersion This is required.
+         * The current version of the database.
          *
-         * @param {String} config.newVersion
-         * The new version of the database. This is required.
+         * @param {String} config.newVersion This is required.
+         * The new version of the database.
          *
-         * @param {Function} config.callback
-         * The callback to be called when the transaction has been created. This is optional.
+         * @param {Function} config.callback This is optional.
+         * The callback to be called when the transaction has been created.
          *
          * @param {Ext.device.SQLite.SQLTransaction} config.callback.transaction
          * The created transaction.
          *
-         * @param {Function} config.success
-         * The callback to be called when the transaction has been successfully commited. This is optional.
+         * @param {Function} config.success This is optional.
+         * The callback to be called when the transaction has been successfully commited.
          *
-         * @param {Function} config.failure
-         * The callback to be called when an error occurred and the transaction has been rolled back. This is optional.
+         * @param {Function} config.failure This is optional.
+         * The callback to be called when an error occurred and the transaction has been rolled back.
          *
          * @param {Object} config.failure.error
          * The occurred error.
@@ -363,14 +355,14 @@ Ext.define('Ext.device.sqlite.Sencha', {
              * @param {Object} config
              * The object which contains the following config options:
              *
-             * @param {String} config.sqlStatement
-             * The SQL statement to execute. This is required.
+             * @param {String} config.sqlStatement This is required.
+             * The SQL statement to execute.
              *
-             * @param {Array} config.arguments
-             * The arguments array to bind each '?' placeholder in the SQL statement. This is optional.
+             * @param {Array} config.arguments This is optional.
+             * The arguments array to bind each '?' placeholder in the SQL statement.
              *
-             * @param {Function} config.callback
-             * The callback to be called when the SQL statement succeeded. This is optional.
+             * @param {Function} config.callback This is optional.
+             * The callback to be called when the SQL statement succeeded.
              *
              * @param {Ext.device.SQLite.SQLTransaction} config.callback.transaction
              * The transaction of the SQL statement.
@@ -378,8 +370,8 @@ Ext.define('Ext.device.sqlite.Sencha', {
              * @param {Ext.device.SQLite.SQLTransaction} config.callback.resultSet
              * The result of the SQL statement.
              *
-             * @param {Function} config.failure
-             * The callback to be called when an error occurred. This is optional.
+             * @param {Function} config.failure This is optional.
+             * The callback to be called when an error occurred.
              * If the callback returns false, next SQL statement will be executed.
              *
              * @param {Ext.device.SQLite.SQLTransaction} config.failure.transaction
@@ -426,7 +418,8 @@ Ext.define('Ext.device.sqlite.Sencha', {
                 },
 
                 /**
-                 * Returns the row ID of the last row that the SQL statement inserted into the database, if the statement inserted any rows.
+                 * Returns the row ID of the last row that the SQL statement inserted into the database,
+                 * if the statement inserted any rows.
                  * If the statement did not insert a row, throws an exception.
                  *
                  * @return {Number}
@@ -488,8 +481,8 @@ Ext.define('Ext.device.sqlite.Sencha', {
                      * Returns a row at specified index returned by the SQL statement.
                      * If there is no such row, returns null.
                      *
-                     * @param {Number} index
-                     * The index of a row. This is required.
+                     * @param {Number} index This is required.
+                     * The index of a row.
                      *
                      * @return {Object}
                      * The row.

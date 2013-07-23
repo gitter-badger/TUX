@@ -473,7 +473,8 @@ Ext.define('Ext.dataview.DataView', {
     initialize: function() {
         this.callParent();
         var me = this,
-            container;
+            container,
+            triggerEvent = me.getTriggerEvent();
 
         me.on(me.getTriggerCtEvent(), me.onContainerTrigger, me);
 
@@ -482,7 +483,9 @@ Ext.define('Ext.dataview.DataView', {
         }));
         container.dataview = me;
 
-        me.on(me.getTriggerEvent(), me.onItemTrigger, me);
+        if (triggerEvent) {
+            me.on(triggerEvent, me.onItemTrigger, me);
+        }
 
         container.on({
             itemtouchstart: 'onItemTouchStart',
@@ -558,7 +561,9 @@ Ext.define('Ext.dataview.DataView', {
 
     // apply to the selection model to maintain visual UI cues
     onItemTrigger: function(me, index) {
-        this.selectWithEvent(this.getStore().getAt(index));
+        if (!this.isDestroyed) {
+            this.selectWithEvent(this.getStore().getAt(index));
+        }
     },
 
     doAddPressedCls: function(record) {
@@ -789,12 +794,16 @@ Ext.define('Ext.dataview.DataView', {
             proxy, reader;
 
         if (oldStore && Ext.isObject(oldStore) && oldStore.isStore) {
-            me.onStoreClear();
+            oldStore.un(bindEvents);
+
+            if (!me.isDestroyed) {
+                me.onStoreClear();
+            }
+
             if (oldStore.getAutoDestroy()) {
                 oldStore.destroy();
             }
             else {
-                oldStore.un(bindEvents);
                 proxy = oldStore.getProxy();
                 if (proxy) {
                     reader = proxy.getReader();
@@ -994,10 +1003,9 @@ Ext.define('Ext.dataview.DataView', {
             reader.clearListeners();
         }
 
-        if (store && store.getAutoDestroy()) {
-            store.destroy();
-        }
         this.callParent(arguments);
+
+        this.setStore(null);
     },
 
     onStoreClear: function() {
@@ -1045,7 +1053,8 @@ Ext.define('Ext.dataview.DataView', {
      */
     onStoreUpdate: function(store, record, newIndex, oldIndex) {
         var me = this,
-            container = me.container;
+            container = me.container,
+            item;
 
         oldIndex = (typeof oldIndex === 'undefined') ? newIndex : oldIndex;
 
@@ -1056,8 +1065,11 @@ Ext.define('Ext.dataview.DataView', {
             }
         }
         else {
-            // Bypassing setter because sometimes we pass the same record (different data)
-            container.updateListItem(record, me.getViewItems()[newIndex]);
+            item = me.getViewItems()[newIndex];
+            if (item) {
+                // Bypassing setter because sometimes we pass the same record (different data)
+                container.updateListItem(record, item);
+            }
         }
     }
     //<deprecated product=touch since=2.0>

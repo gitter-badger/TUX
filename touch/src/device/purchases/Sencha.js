@@ -54,7 +54,7 @@ Ext.define('Ext.device.purchases.Sencha', {
      *     });
      * 
      * @param {Object} config
-     * @param {Array[]} config.productInfos An array of all products productInfos
+     * @param {Object[]} config.productInfos An array of all products productInfos
      * @param {Function} config.success
      * @param {Ext.data.Store} config.success.store A store of all products available to purchase.
      * @param {Function} config.failure

@@ -1,4 +1,4 @@
-Sencha Touch 2.2 - JavaScript Library
+Sencha Touch 2.3 - JavaScript Library
 Copyright (c) 2006-2013, Sencha Inc.
 All rights reserved.
 licensing@sencha.com

@@ -34,7 +34,9 @@ Ext.define('Ext.data.proxy.WebStorage', {
          * @cfg {Boolean} enablePagingParams This can be set to true if you want the webstorage proxy to comply
          * to the paging params set on the store.
          */
-        enablePagingParams: false
+        enablePagingParams: false,
+
+		defaultDateFormat: 'Y-m-d H:i:s.u'
     },
 
     /**
@@ -233,7 +235,7 @@ Ext.define('Ext.data.proxy.WebStorage', {
                 Model   = this.getModel(),
                 fields  = Model.getFields().items,
                 length  = fields.length,
-                i, field, name, record, rawData, dateFormat;
+                i, field, name, record, rawData, rawValue;
 
             if (!item) {
                 return undefined;
@@ -244,19 +246,15 @@ Ext.define('Ext.data.proxy.WebStorage', {
             for (i = 0; i < length; i++) {
                 field = fields[i];
                 name  = field.getName();
+				rawValue = rawData[name];
 
                 if (typeof field.getDecode() == 'function') {
-                    data[name] = field.getDecode()(rawData[name]);
+                    data[name] = field.getDecode()(rawValue);
                 } else {
                     if (field.getType().type == 'date') {
-                        dateFormat = field.getDateFormat();
-                        if (dateFormat) {
-                            data[name] = Ext.Date.parse(rawData[name], dateFormat);
-                        } else {
-                            data[name] = new Date(rawData[name]);
-                        }
+						data[name] = this.readDate(field, rawValue);
                     } else {
-                        data[name] = rawData[name];
+                        data[name] = rawValue;
                     }
                 }
             }
@@ -287,28 +285,24 @@ Ext.define('Ext.data.proxy.WebStorage', {
             fields  = Model.getFields().items,
             length  = fields.length,
             i = 0,
-            field, name, obj, key, dateFormat;
+            rawValue, field, name, obj, key;
 
         for (; i < length; i++) {
             field = fields[i];
             name  = field.getName();
+			rawValue = rawData[name];
 
             if (field.getPersist() === false) {
                 continue;
             }
 
             if (typeof field.getEncode() == 'function') {
-                data[name] = field.getEncode()(rawData[name], record);
+                data[name] = field.getEncode()(rawValue, record);
             } else {
-                if (field.getType().type == 'date' && Ext.isDate(rawData[name])) {
-                    dateFormat = field.getDateFormat();
-                    if (dateFormat) {
-                        data[name] = Ext.Date.format(rawData[name], dateFormat);
-                    } else {
-                        data[name] = rawData[name].getTime();
-                    }
+                if (field.getType().type == 'date' && Ext.isDate(rawValue)) {
+					data[name] = this.writeDate(field, rawValue);
                 } else {
-                    data[name] = rawData[name];
+                    data[name] = rawValue;
                 }
             }
         }
@@ -409,6 +403,38 @@ Ext.define('Ext.data.proxy.WebStorage', {
             }
         }
     },
+
+	writeDate: function(field, date) {
+		if (Ext.isEmpty(date)) {
+			return null;
+		}
+
+		var dateFormat = field.getDateFormat() || this.getDefaultDateFormat();
+		switch (dateFormat) {
+			case 'timestamp':
+				return date.getTime() / 1000;
+			case 'time':
+				return date.getTime();
+			default:
+				return Ext.Date.format(date, dateFormat);
+		}
+	},
+
+	readDate: function(field, date) {
+		if (Ext.isEmpty(date)) {
+			return null;
+		}
+
+		var dateFormat = field.getDateFormat() || this.getDefaultDateFormat();
+		switch (dateFormat) {
+			case 'timestamp':
+				return new Date(date * 1000);
+			case 'time':
+				return new Date(date);
+			default:
+				return Ext.Date.format(Ext.isDate(date) ? date : new Date(date), dateFormat);
+		}
+	},
 
     /**
      * @private

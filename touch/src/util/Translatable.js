@@ -12,33 +12,15 @@ Ext.define('Ext.util.Translatable', {
     ],
 
     constructor: function(config) {
-        var namespace = Ext.util.translatable,
-            CssTransform = namespace.CssTransform,
-            ScrollPosition = namespace.ScrollPosition,
-            CssPosition = namespace.CssPosition,
-            classReference;
+        var namespace = Ext.util.translatable;
 
-        if (typeof config == 'object' && 'translationMethod' in config) {
-            if (config.translationMethod === 'scrollposition') {
-                classReference = ScrollPosition;
-            }
-            else if (config.translationMethod === 'csstransform') {
-                classReference = CssTransform;
-            }
-            else if (config.translationMethod === 'cssposition') {
-                classReference = CssPosition;
-            }
+        switch (Ext.browser.getPreferredTranslationMethod(config)) {
+        case 'scrollposition':
+            return new namespace.ScrollPosition(config);
+        case 'csstransform':
+            return new namespace.CssTransform(config);
+        case 'cssposition':
+            return new namespace.CssPosition(config);
         }
-
-        if (!classReference) {
-            if (Ext.browser.is.AndroidStock2 || Ext.browser.is.IE) {
-                classReference = ScrollPosition;
-            }
-            else {
-                classReference = CssTransform;
-            }
-        }
-
-        return new classReference(config);
     }
 });

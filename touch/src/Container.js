@@ -125,17 +125,17 @@ Ext.define('Ext.Container', {
     /**
      * @event activate
      * Fires whenever item within the Container is activated.
-     * @param {Ext.Container} this The Container instance.
      * @param {Object} newActiveItem The new active item within the container.
+     * @param {Ext.Container} this The Container instance.
      * @param {Object} oldActiveItem The old active item within the container.
      */
 
     /**
      * @event deactivate
      * Fires whenever item within the Container is deactivated.
+     * @param {Object} oldActiveItem The old active item within the container.
      * @param {Ext.Container} this The Container instance.
      * @param {Object} newActiveItem The new active item within the container.
-     * @param {Object} oldActiveItem The old active item within the container.
      */
 
     eventedConfig: {
@@ -722,7 +722,8 @@ Ext.define('Ext.Container', {
     /**
      * Removes an item from this Container, optionally destroying it.
      * @param {Object} item The item to remove.
-     * @param {Boolean} [destroy] Calls the Component's {@link Ext.Component#destroy destroy} method if `true`.
+     * @param {Boolean} [destroy] Calls the Component's {@link Ext.Component#method-destroy destroy}
+     * method if `true`.
      * @return {Ext.Component} this
      */
     remove: function(item, destroy) {
@@ -786,8 +787,10 @@ Ext.define('Ext.Container', {
 
     /**
      * Removes all items currently in the Container, optionally destroying them all.
-     * @param {Boolean} destroy If `true`, {@link Ext.Component#destroy destroys} each removed Component.
-     * @param {Boolean} everything If `true`, completely remove all items including docked / centered and floating items.
+     * @param {Boolean} destroy If `true`, {@link Ext.Component#method-destroy destroys}
+     * each removed Component.
+     * @param {Boolean} everything If `true`, completely remove all items including
+     * docked / centered and floating items.
      * @return {Ext.Component} this
      */
     removeAll: function(destroy, everything) {
@@ -1241,11 +1244,13 @@ Ext.define('Ext.Container', {
             defaultAnimation = layout.getAnimation();
             if (defaultAnimation) {
                 defaultAnimation.disable();
-                animation.on('animationend', function() {
-                    defaultAnimation.enable();
-                    animation.destroy();
-                }, this);
             }
+            animation.on('animationend', function() {
+                if (defaultAnimation) {
+                    defaultAnimation.enable();
+                }
+                animation.destroy();
+            }, this);
         }
         return this.setActiveItem(activeItem);
     },
@@ -1485,7 +1490,8 @@ Ext.define('Ext.Container', {
      * Removes a docked item from this Container.
      * @deprecated 2.0.0 Please use {@link #method-remove} instead.
      * @param {Object} item The item to remove.
-     * @param {Boolean} destroy Calls the Component's {@link Ext.Component#destroy destroy} method if `true`.
+     * @param {Boolean} destroy Calls the Component's {@link Ext.Component#method-destroy destroy}
+     * method if `true`.
      * @return {Ext.Component} this
      */
     Ext.deprecateClassMethod(this, 'removeDocked', 'remove');

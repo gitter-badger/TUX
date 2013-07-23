@@ -1179,15 +1179,22 @@ Ext.define('Ext.Component', {
     },
 
     updateUi: function(newUi, oldUi) {
-        var baseCls = this.getBaseCls();
+        var baseCls = this.getBaseCls(),
+            element = this.element,
+            currentUi = this.currentUi;
 
         if (baseCls) {
             if (oldUi) {
-                this.element.removeCls(this.currentUi);
+                if (currentUi) {
+                    element.removeCls(currentUi);
+                }
+                else {
+                    element.removeCls(baseCls + '-' + oldUi);
+                }
             }
 
             if (newUi) {
-                this.element.addCls(newUi, baseCls);
+                element.addCls(newUi, baseCls);
                 this.currentUi = baseCls + '-' + newUi;
             }
         }
@@ -1887,29 +1894,33 @@ Ext.define('Ext.Component', {
 
     getInnerHtmlElement: function() {
         var innerHtmlElement = this.innerHtmlElement,
-            styleHtmlCls = this.getStyleHtmlCls();
+            styleHtmlCls;
 
         if (!innerHtmlElement || !innerHtmlElement.dom || !innerHtmlElement.dom.parentNode) {
-            this.innerHtmlElement = innerHtmlElement = this.innerElement.createChild({ cls: 'x-innerhtml ' });
+            this.innerHtmlElement = innerHtmlElement = Ext.Element.create({ cls: 'x-innerhtml' });
 
             if (this.getStyleHtmlContent()) {
+                styleHtmlCls = this.getStyleHtmlCls();
                 this.innerHtmlElement.addCls(styleHtmlCls);
                 this.innerElement.removeCls(styleHtmlCls);
             }
+            this.innerElement.appendChild(innerHtmlElement);
         }
 
         return innerHtmlElement;
     },
 
     updateHtml: function(html) {
-        var innerHtmlElement = this.getInnerHtmlElement();
+        if (!this.isDestroyed) {
+            var innerHtmlElement = this.getInnerHtmlElement();
 
-        if (Ext.isElement(html)){
-            innerHtmlElement.setHtml('');
-            innerHtmlElement.append(html);
-        }
-        else {
-            innerHtmlElement.setHtml(html);
+            if (Ext.isElement(html)){
+                innerHtmlElement.setHtml('');
+                innerHtmlElement.append(html);
+            }
+            else {
+                innerHtmlElement.setHtml(html);
+            }
         }
     },
 

@@ -117,7 +117,6 @@ Ext.define('Ext.plugin.ListPaging', {
         this.setScroller(scroller);
         this.bindStore(list.getStore());
 
-        list.setScrollToTopOnRefresh(false);
         this.addLoadMoreCmp();
 
         // We provide our own load mask so if the Store is autoLoading already disable the List's mask straight away,
@@ -216,7 +215,12 @@ Ext.define('Ext.plugin.ListPaging', {
      * If we're using autoPaging and detect that the user has scrolled to the bottom, kick off loading of the next page
      */
     onScrollEnd: function(scroller, x, y) {
+        var list = this.getList();
+
         if (!this.getLoading() && y >= scroller.maxPosition.y) {
+            this.currentScrollToTopOnRefresh = list.getScrollToTopOnRefresh();
+            list.setScrollToTopOnRefresh(false);
+
             this.loadNextPage();
         }
     },
@@ -266,6 +270,11 @@ Ext.define('Ext.plugin.ListPaging', {
             cssPrefix: Ext.baseCSSPrefix,
             message: message
         }));
+
+        if (this.currentScrollToTopOnRefresh !== undefined) {
+            this.getList().setScrollToTopOnRefresh(this.currentScrollToTopOnRefresh);
+            delete this.currentScrollToTopOnRefresh;
+        }
     },
 
     /**

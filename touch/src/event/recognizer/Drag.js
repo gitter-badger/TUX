@@ -15,7 +15,11 @@ Ext.define('Ext.event.recognizer.Drag', {
     handledEvents: ['dragstart', 'drag', 'dragend'],
 
     config: {
-        minDistance: 5
+        /**
+         * @cfg {Number} minDistance
+         * The minimum distance of pixels before a touch event becomes a drag event.
+         */
+        minDistance: 8
     },
 
     constructor: function() {
@@ -78,8 +82,7 @@ Ext.define('Ext.event.recognizer.Drag', {
         if (Math.abs(point.getDistanceTo(startPoint)) >= minDistance) {
             this.isStarted = true;
 
-            this.lastPoint = this.previousPoint = this.lastPoint = point;
-//            this.startPoint = new Ext.util.LineSegment(startPoint, point).getInBetweenPoint(minDistance);
+            this.previousPoint = this.lastPoint = point;
 
             this.resetInfo('x', e, touch);
             this.resetInfo('y', e, touch);

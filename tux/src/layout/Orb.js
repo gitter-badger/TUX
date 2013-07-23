@@ -84,12 +84,15 @@ Ext.define('Ext.tux.layout.Orb', {
         var me = this,
             center = center || me.center,
             items = me.container.items,
+            length = items.length,
             gravity = me.getGravity(),
             angle = 0,
-            width, height, top, left;
+            i = 0,
+            item, width, height, top, left;
 
-        items.each(function(item, index, length){
-    
+        for(; i < length; i++){
+	
+	        item = items.getAt(i);
             width = item.getWidth() / 2;
             height = item.getHeight() / 2;
 
@@ -99,11 +102,11 @@ Ext.define('Ext.tux.layout.Orb', {
             item.setTop(top);
             item.setLeft(left);
     
-            me.updateItemOrientation(item, index, length);
+            me.updateItemOrientation(item, i, length);
     
             angle += Math.PI * 2 / length;
 
-        });
+        }
     
         me.center = center;
 

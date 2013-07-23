@@ -9,30 +9,27 @@
     @include border-radius($size);
 }
 
-.x-field-radio .x-input-el {
-    position: relative;
+.x-field-radio .x-field-mask {
+    @include absolute-position;
 
-    &:before {
-        @include radiomark($form-light, 26px);
-    }
-
-    &:after {
+    &::after {
         @include radiomark(darken($form-light, 5), 16px);
     }
 
-    &:checked:after {
-        background-color: $active-color;
+    &::before {
+        @include radiomark($form-light, 26px);
     }
+}
+
+.x-input-radio:checked + .x-field-mask::after {
+    background: $active-color;
 }
 
 .x-item-disabled {
     &.x-field-radio {
-        .x-input-el:checked:after {
-            background: mix($form-light, $active-color, 70);
-        }
-
-        .x-input-el:before {
-            background: #eee;
+        .x-input-radio:checked + .x-field-mask::after {
+            background: mix($form-light, $active-color, 60);
         }
     }
 }
+

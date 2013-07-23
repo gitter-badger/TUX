@@ -117,6 +117,13 @@ Ext.define('Ext.TitleBar', {
         title: null,
 
         /**
+         * @cfg {String} titleAlign
+         * The alignment for the title of the toolbar.
+         * @accessor
+         */
+        titleAlign: 'center',
+
+        /**
          * @cfg {String} defaultType
          * The default xtype to create.
          * @accessor
@@ -150,6 +157,11 @@ Ext.define('Ext.TitleBar', {
         items: []
     },
 
+    platformConfig: [{
+        theme: ['Blackberry'],
+        titleAlign: 'left'
+    }],
+
     hasCSSMinHeight: true,
 
     /**
@@ -176,6 +188,7 @@ Ext.define('Ext.TitleBar', {
 
     applyInitialItems: function(items) {
         var me = this,
+            titleAlign = me.getTitleAlign(),
             defaults = me.getDefaults() || {};
 
         me.initialItems = items;
@@ -216,11 +229,32 @@ Ext.define('Ext.TitleBar', {
             }
         });
 
-        me.titleComponent = me.add({
-            xtype: 'title',
-            hidden: defaults.hidden,
-            centered: true
-        });
+
+        switch(titleAlign) {
+            case 'left':
+                me.titleComponent = me.leftBox.add({
+                    xtype: 'title',
+                    cls: Ext.baseCSSPrefix + 'title-align-left',
+                    hidden: defaults.hidden
+                });
+                me.refreshTitlePosition = Ext.emptyFn;
+            break;
+            case 'right':
+                me.titleComponent = me.rightBox.add({
+                    xtype: 'title',
+                    cls: Ext.baseCSSPrefix + 'title-align-right',
+                    hidden: defaults.hidden
+                });
+                me.refreshTitlePosition = Ext.emptyFn;
+            break;
+            default:
+                me.titleComponent = me.add({
+                    xtype: 'title',
+                    hidden: defaults.hidden,
+                    centered: true
+                });
+            break;
+        }
 
         me.doAdd = me.doBoxAdd;
         me.remove = me.doBoxRemove;
@@ -236,21 +270,21 @@ Ext.define('Ext.TitleBar', {
         }
     },
 
-    doBoxRemove: function(item) {
+    doBoxRemove: function(item, destroy) {
         if (item.config.align == 'right') {
-            this.rightBox.remove(item);
+            this.rightBox.remove(item, destroy);
         }
         else {
-            this.leftBox.remove(item);
+            this.leftBox.remove(item, destroy);
         }
     },
 
     doBoxInsert: function(index, item) {
         if (item.config.align == 'right') {
-            this.rightBox.add(item);
+            this.rightBox.insert(index, item);
         }
         else {
-            this.leftBox.add(item);
+            this.leftBox.insert(index, item);
         }
     },
 

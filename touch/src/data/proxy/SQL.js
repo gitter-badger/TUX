@@ -1,5 +1,41 @@
 /**
- * SQL proxy.
+ * SQL proxy lets you store data in a SQL database.
+ * The Sencha Touch SQL proxy outputs model data into an HTML5
+ * local database using WebSQL.
+ *
+ * You can create a Store for the proxy, for example:
+ *
+ *    Ext.require(["Ext.data.proxy.SQL"]);
+ *
+ *    Ext.define("User", {
+ *       extend: "Ext.data.model",
+ *       config: {
+ *          fields: [ "firstName", "lastName" ]
+ *       }
+ *     });
+ *
+ *     Ext.create("Ext.data.Store", {
+ *        model: "User",
+ *        storeId: "Users",
+ *        proxy: {
+ *           type: "sql""
+ *        }
+ *     });
+ *
+ *     Ext.getStore("Users").add([{
+ *        firstName: "Polly",
+ *        lastName: "Hedra"
+ *     });
+ *
+ *     Ext.getStore("Users").sync();
+ *
+ * To destroy a table use:
+ *
+ *    Ext.getStore("Users").getModel().getProxy().dropTable();
+ *
+ * To recreate a table use:
+ *
+ *     Ext.data.Store.sync() or Ext.data.Model.save()
  */
 Ext.define('Ext.data.proxy.Sql', {
     alias: 'proxy.sql',
@@ -40,7 +76,7 @@ Ext.define('Ext.data.proxy.Sql', {
     },
 
     updateModel: function(model) {
-        if (model && !this.getTable()) {
+        if (model) {
             var modelName = model.modelName,
                 defaultDateFormat = this.getDefaultDateFormat(),
                 table = modelName.slice(modelName.lastIndexOf('.') + 1);
@@ -52,7 +88,9 @@ Ext.define('Ext.data.proxy.Sql', {
             });
 
             this.setUniqueIdStrategy(model.getIdentifier().isUnique);
-            this.setTable(table);
+            if (!this.getTable()) {
+                this.setTable(table);
+            }
             this.setColumns(this.getPersistedModelColumns(model));
         }
 
@@ -72,7 +110,7 @@ Ext.define('Ext.data.proxy.Sql', {
                 me.createTable(transaction);
             }
 
-            me.insertRecords(records, transaction, function(resultSet, errors) {
+            me.insertRecords(records, transaction, function(resultSet) {
                 if (operation.process(operation.getAction(), resultSet) === false) {
                     me.fireEvent('exception', this, operation);
                 }

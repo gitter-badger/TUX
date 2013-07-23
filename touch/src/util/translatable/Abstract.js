@@ -220,7 +220,6 @@ Ext.define('Ext.util.translatable.Abstract', {
         me.fireEvent('animationframe', me, x, y);
     },
 
-
     stopAnimation: function() {
         if (!this.isAnimating) {
             return;

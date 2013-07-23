@@ -121,7 +121,13 @@ Ext.define('Ext.viewport.Default', {
          */
         height: '100%',
 
-        useBodyElement: true
+        useBodyElement: true,
+
+        /**
+         * An object of all the menus on this viewport.
+         * @private
+         */
+        menus: {}
     },
 
     /**
@@ -152,7 +158,15 @@ Ext.define('Ext.viewport.Default', {
         this.doPreventZooming = bind(this.doPreventZooming, this);
         this.doBlurInput = bind(this.doBlurInput, this);
 
-        this.maximizeOnEvents = ['ready', 'orientationchange'];
+        this.maximizeOnEvents = [
+          'ready',
+          'orientationchange'
+        ];
+
+      // set default devicePixelRatio if it is not explicitly defined
+        window.devicePixelRatio = window.devicePixelRatio || 1;
+
+        this.callSuper([config]);
 
         this.orientation = this.determineOrientation();
         this.windowWidth = this.getWindowWidth();
@@ -160,13 +174,8 @@ Ext.define('Ext.viewport.Default', {
         this.windowOuterHeight = this.getWindowOuterHeight();
 
         if (!this.stretchHeights) {
-            this.stretchHeights = {};
+        this.stretchHeights = {};
         }
-
-        // set default devicePixelRatio if it is not explicitly defined
-        window.devicePixelRatio = window.devicePixelRatio || 1;
-
-        this.callParent([config]);
 
         // Android is handled separately
         if (!Ext.os.is.Android || Ext.browser.is.ChromeMobile) {
@@ -199,6 +208,9 @@ Ext.define('Ext.viewport.Default', {
     onReady: function() {
         if (this.getAutoRender()) {
             this.render();
+        }
+        if (Ext.browser.name == 'ChromeiOS') {
+            this.setHeight('-webkit-calc(100% - ' + ((window.outerHeight - window.innerHeight) / 2) + 'px)');
         }
     },
 
@@ -558,5 +570,411 @@ Ext.define('Ext.viewport.Default', {
     onItemFullscreenChange: function(item) {
         item.addCls(this.fullscreenItemCls);
         this.add(item);
+    },
+
+    /**
+     * Sets a menu for a given side of the Viewport.
+     *
+     * Adds functionality to show the menu by swiping from the side of the screen from the given side.
+     *
+     * If a menu is already set for a given side, it will be removed.
+     *
+     * Available sides are: `left`, `right`, `top`, and `bottom`.
+     *
+     * @param  {Ext.Menu} menu The menu to assign to the viewport
+     * @param  {Object} config The configuration for the menu.
+     * @param {String} config.side The side to put the menu on.
+     * @param {Boolean} config.cover True to cover the viewport content. Defaults to `true`.
+     */
+    setMenu: function(menu, config) {
+        var config = config || {};
+
+        if (!menu) {
+            //<debug error>
+            Ext.Logger.error("You must specify a side to dock the menu.");
+            //</debug>
+            return;
+        }
+
+        if (!config.side) {
+            //<debug error>
+            Ext.Logger.error("You must specify a side to dock the menu.");
+            //</debug>
+            return;
+        }
+
+        if (['left', 'right', 'top', 'bottom'].indexOf(config.side) == -1) {
+            //<debug error>
+            Ext.Logger.error("You must specify a valid side (left, right, top or botom) to dock the menu.");
+            //</debug>
+            return;
+        }
+
+        var menus = this.getMenus();
+
+        if (!menus) {
+            menus = {};
+        }
+
+        // Remove any existing menus on this side
+        if (menus[config.side]) {
+            this.remove(menus[config.side]);
+        }
+
+        // Add a listener to show this menu on swipe
+        if (!this.addedSwipeListener) {
+            this.addedSwipeListener = true;
+
+            this.element.on({
+                tap: this.onTap,
+                swipestart: this.onSwipeStart,
+                edgeswipestart: this.onEdgeSwipeStart,
+                edgeswipe: this.onEdgeSwipe,
+                edgeswipeend: this.onEdgeSwipeEnd,
+                scope: this
+            });
+        }
+
+        menus[config.side] = menu;
+        menu.$cover = (config.cover === false) ? false : true;
+        menu.setDocked(config.side);
+        menu.$side = config.side;
+        this.fixMenuSize(menu, config.side);
+
+        this.setMenus(menus);
+    },
+
+    /**
+     * Removes a menu from a specified side.
+     * @param  {String} side The side to remove the menu from
+     */
+    removeMenu: function(side) {
+        var menus = this.getMenus() || {};
+        delete menus[side];
+        this.setMenus(menus);
+    },
+
+    /**
+     * @private
+     * Changes the sizing of the specified menu so that it displays correctly when shown.
+     */
+    fixMenuSize: function(menu, side) {
+        if (side == 'top' || side == 'bottom') {
+            menu.setWidth('100%');
+        }
+        else if (side == 'left' || side == 'right') {
+            menu.setHeight('100%');
+        }
+    },
+
+    /**
+     * Shows a menu specified by the menu's side.
+     * @param  {String} side The side which the menu is placed.
+     */
+    showMenu: function(side) {
+        var menus = this.getMenus(),
+            menu = menus[side],
+            to = {};
+
+        if (!menu || menu.isAnimating) {
+            return;
+        }
+
+        Ext.Viewport.add(menu);
+        menu.show();
+        menu.addCls('x-' + side);
+
+        var size = (side == 'left' || side == 'right') ? menu.element.getWidth() : menu.element.getHeight(),
+            setter = 'set' + Ext.String.capitalize(side);
+
+        menu[setter](-size);
+
+        to[side] = 0;
+
+        var animations = [];
+
+        animations.push(new Ext.fx.Animation({
+            element: menu.element,
+            preserveEndState: true,
+            duration: 200,
+            to: to,
+            onEnd: function() {
+                menu.isAnimating = false;
+            }
+        }));
+
+        to[side] = size;
+
+        if (!menu.$cover) {
+            animations.push(new Ext.fx.Animation({
+                element: this.innerElement,
+                preserveEndState: true,
+                duration: 200,
+                to: to
+            }));
+        }
+
+        // Make the menu as animating
+        menu.isAnimating = true;
+
+        Ext.Animator.run(animations);
+    },
+
+    /**
+     * Hides a menu specified by the menu's side.
+     * @param  {String} side The side which the menu is placed.
+     */
+    hideMenu: function(side, animate) {
+        var menus = this.getMenus(),
+            menu = menus[side],
+            menuBefore = {},
+            menuTo = {},
+            viewportTo = {},
+            animations = [],
+            size;
+
+        animate = (animate === false) ? false : true;
+
+        if (!menu || (menu.isHidden() || menu.isAnimating)) {
+            return;
+        }
+
+        size = (side == 'left' || side == 'right') ? menu.element.getWidth() : menu.element.getHeight();
+
+        menuTo[side] = -size;
+        menuBefore[side] = 0;
+        viewportTo[side] = 0;
+
+        if (animate) {
+            animations.push(new Ext.fx.Animation({
+                element: menu.element,
+                preserveEndState: true,
+                duration: 200,
+                before: menuBefore,
+                to: menuTo,
+                onEnd: function() {
+                    menu.isAnimating = false;
+                    menu.setHidden(true);
+                }
+            }));
+
+            // Move the viewport if cover is not enabled
+            if (!menu.$cover) {
+                animations.push(new Ext.fx.Animation({
+                    element: this.innerElement,
+                    preserveEndState: true,
+                    duration: 200,
+                    to: viewportTo,
+                    onEnd: function() {
+                        this.innerElement.setLeft('auto');
+                        this.innerElement.setRight('auto');
+                        this.innerElement.setTop('auto');
+                        this.innerElement.setBottom('auto');
+                    },
+                    scope: this
+                }));
+            }
+
+            // Make the menu as animating
+            menu.isAnimating = true;
+
+            Ext.Animator.run(animations);
+        } else {
+            // var setter = 'set' + Ext.String.capitalize(side);
+
+            // menu.element[setter] = -size;
+            menu.setHidden(true);
+
+            // Move the viewport if cover is not enabled
+            if (!menu.$cover) {
+                this.innerElement.setLeft('auto');
+                this.innerElement.setRight('auto');
+                this.innerElement.setTop('auto');
+                this.innerElement.setBottom('auto');
+            }
+        }
+    },
+
+    /**
+     * Hides all visible menus.
+     */
+    hideAllMenus: function(animation) {
+        var menus = this.getMenus();
+
+        for (var side in menus) {
+            this.hideMenu(side, animation);
+        }
+    },
+
+    /**
+     * @private
+     */
+    sideForDirection: function(direction) {
+        if (direction == 'left') {
+            return 'right';
+        }
+        else if (direction == 'right') {
+            return 'left';
+        }
+        else if (direction == 'up') {
+            return 'bottom';
+        }
+        else if (direction == 'down') {
+            return 'top';
+        }
+    },
+
+    /**
+     * @private
+     */
+    sideForSwipeDirection: function(direction) {
+        if (direction == "up") {
+            return  "top";
+        }
+        else if (direction == "down") {
+            return "bottom";
+        }
+        return direction;
+    },
+
+    /**
+     * @private
+     */
+    onTap: function(e) {
+        // this.hideAllMenus();
+    },
+
+    /**
+     * @private
+     */
+    onSwipeStart: function(e) {
+        var side = this.sideForSwipeDirection(e.direction);
+        this.hideMenu(side);
+    },
+
+    /**
+     * @private
+     */
+    onEdgeSwipeStart: function(e) {
+        var side = this.sideForDirection(e.direction),
+            menu = this.getMenus()[side];
+
+        if (!menu || !menu.isHidden()) {
+            return;
+        }
+
+        this.$swiping = true;
+
+        this.hideAllMenus(false);
+
+        // show the menu first so we can calculate the size
+        Ext.Viewport.add(menu);
+        menu.show();
+
+        var size = (side == 'left' || side == 'right') ? menu.element.getWidth() : menu.element.getHeight(),
+            setter = 'set' + Ext.String.capitalize(side);
+
+        menu[setter](-size);
+    },
+
+    /**
+     * @private
+     */
+    onEdgeSwipe: function(e) {
+        var side = this.sideForDirection(e.direction),
+            menu = this.getMenus()[side];
+
+        if (!menu || !this.$swiping) {
+            return;
+        }
+
+        var size = (side == 'left' || side == 'right') ? menu.element.getWidth() : menu.element.getHeight(),
+            setter = 'set' + Ext.String.capitalize(side),
+            movement = Math.min(e.distance - size, 0);
+
+        menu[setter](movement);
+
+        // if not cover, also move the viewport
+        if (!menu.$cover) {
+            this.innerElement[setter](Math.max(size - Math.abs(movement), 0));
+        }
+    },
+
+    /**
+     * @private
+     */
+    onEdgeSwipeEnd: function(e) {
+        var side = this.sideForDirection(e.direction),
+            menu = this.getMenus()[side],
+            shouldRevert = false;
+
+        if (!menu) {
+            return;
+        }
+
+        var size = (side == 'left' || side == 'right') ? menu.element.getWidth() : menu.element.getHeight(),
+            setter = 'set' + Ext.String.capitalize(side),
+            getter = 'get' + Ext.String.capitalize(side),
+            velocity = (e.flick) ? e.flick.velocity : 0;
+
+        // check if already fully offset
+        if (menu[getter]() == size) {
+            return;
+        }
+
+        // check if continuing in the right dirrection
+        if (side == 'right') {
+            if (velocity.x > 0) {
+                shouldRevert = true;
+            }
+        }
+        else if (side == 'left') {
+            if (velocity.x < 0) {
+                shouldRevert = true;
+            }
+        }
+        else if (side == 'top') {
+            if (velocity.y < 0) {
+                shouldRevert = true;
+            }
+        }
+        else if (side == 'bottom') {
+            if (velocity.y > 0) {
+                shouldRevert = true;
+            }
+        }
+
+        var menuTo = {},
+            viewportTo = {},
+            animations = [];
+
+        menuTo[side] = (shouldRevert) ? -size : 0;
+        viewportTo[side] = (shouldRevert) ? 0 : size;
+
+        animations.push(new Ext.fx.Animation({
+            element: menu.element,
+            preserveEndState: true,
+            duration: 200,
+            to: menuTo,
+            onEnd: function() {
+                if (shouldRevert) {
+                    menu.hide();
+                }
+            }
+        }));
+
+        // Move the viewport if cover is not enabled
+        if (!menu.$cover) {
+            animations.push(new Ext.fx.Animation({
+                element: this.innerElement,
+                preserveEndState: true,
+                duration: 200,
+                to: viewportTo
+            }));
+        }
+
+        Ext.Animator.run(animations);
+
+        this.$swiping = false;
     }
 });

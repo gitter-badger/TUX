@@ -111,11 +111,18 @@ Ext.define('Ext.chart.series.Gauge', {
          *      colors: ['orange', 'blue', 'lightgray', 'red']
          *
          * It can be also an array of objects, each with the following properties:
-         * - `start`: The starting value of the sector. If omitted, it uses the previous sector's `end` value or the chart's `minimum`.
-         * - `end`: The ending value of the sector. If omitted, it uses the `maximum` defined for the chart.
-         * - `label`: The label for this sector. Labels are styled using the series' {@link Ext.chart.series.Series#label label} config.
-         * - `color`: The color of the sector. If omitted, it uses one of the `colors` defined for the series or for the chart.
-         * - `style`: An additional style object for the sector (for instance to set the opacity or to draw a line of a different color around the sector).
+         * 
+         * @cfg {Number} sectors.start The starting value of the sector. If omitted, it
+         * uses the previous sector's `end` value or the chart's `minimum`.
+         * @cfg {Number} sectors.end The ending value of the sector. If omitted, it uses
+         * the `maximum` defined for the chart.
+         * @cfg {String} sectors.label The label for this sector. Labels are styled using
+         * the series' {@link Ext.chart.series.Series#label label} config.
+         * @cfg {String} sectors.color The color of the sector. If omitted, it uses one
+         * of the `colors` defined for the series or for the chart.
+         * @cfg {Object} sectors.style An additional style object for the sector (for
+         * instance to set the opacity or to draw a line of a different color around the
+         * sector).
          *
          *      minimum: 0,
          *      maximum: 100,
@@ -128,7 +135,7 @@ Ext.define('Ext.chart.series.Gauge', {
          *              end: 80,
          *              label: 'Temp.',
          *              color: 'lightgray',
-         *              style: { strokeStyle:'black', lineWidth:1 }
+         *              style: { strokeStyle:'black', strokeOpacity:1, lineWidth:1 }
          *          },
          *          {
          *              label: 'Hot',
@@ -166,41 +173,44 @@ Ext.define('Ext.chart.series.Gauge', {
     },
 
     updateNeedle: function(needle) {
-        var sprites = this.getSprites();
+        var me = this,
+            sprites = me.getSprites(),
+            angle = me.valueToAngle(me.getValue());
 
         if (sprites && sprites.length) {
             sprites[0].setAttributes({
+                startAngle: (needle ? angle : 0),
+                endAngle: angle,
                 strokeOpacity: (needle ? 1 : 0),
-                lineWidth: this.getNeedleWidth()
+                lineWidth: (needle ? me.getNeedleWidth() : 0)
+
             });
+            me.doUpdateStyles();
         }
     },
 
-    updateColors: function (colors) {
+    updateColors: function (colors, oldColors) {
         var me = this,
-            animate = me.getChart().getAnimate(),
+            sectors = me.getSectors(),
+            sectorCount = sectors && sectors.length,
             sprites = me.getSprites(),
-            spriteCount = sprites.length,
-            colorCount = colors.length,
-            colorAttrNames = ['strokeStyle', 'fillStyle'],
-            colorAttr,
-            i, j, sprite, name, color;
+            spriteCount = sprites && sprites.length,
+            newColors = Ext.Array.clone(colors),
+            colorCount = colors && colors.length,
+            needle = me.getNeedle(),
+            i;
 
-        // Copy the colors into the sprites, making sure we don't override the colors
-        // that are set in the 'sectors' config. It means we cannot simply call:
-        //     this.setSubStyle({strokeStyle:colors, fillStyle:colors});
-        for (i = 0; i < spriteCount; i++) {
-            color = colors[i%colorCount];
-            sprite = sprites[i];
-            for (j = 0; j < colorAttrNames.length; j++) {
-                name = colorAttrNames[j];
-                if (!sprite.attr[name] || sprite.attr[name] == 'none') {
-                    colorAttr = {};
-                    colorAttr[name] = color;
-                    sprite.setAttributes(colorAttr, true);
-                }
-            }
+        if (!colorCount || !colors[0]) {
+            return;
         }
+
+        // Make sure the 'sectors' colors are not overridden.
+        for (i = 0; i < sectorCount; i++) {
+            newColors[i+1] = sectors[i].color || newColors[i+1] || colors[i%colorCount];
+        }
+
+        sprites[0].setAttributes({stroke:newColors[0]});
+        this.setSubStyle({color:newColors});
         this.doUpdateStyles();
     },
     
@@ -289,24 +299,17 @@ Ext.define('Ext.chart.series.Gauge', {
     },
 
     updateValue: function (value) {
-        var needle = this.getNeedle(),
-            pos = (value - this.getMinimum()) / (this.getMaximum() - this.getMinimum()),
-            total = this.getTotalAngle(),
-            angle = pos * total,
-            sprites = this.getSprites();
+        var me = this,
+            needle = me.getNeedle(),
+            angle = me.valueToAngle(value),
+            sprites = me.getSprites();
 
         sprites[0].rendererData.value = value;
-        if (needle) {
-            sprites[0].setAttributes({
-                startAngle: angle,
-                endAngle: angle
-            });
-        } else {
-            sprites[0].setAttributes({
-                endAngle: angle
-            });
-        }
-        this.doUpdateStyles();
+        sprites[0].setAttributes({
+            startAngle: (needle ? angle : 0),
+            endAngle: angle
+        });
+        me.doUpdateStyles();
     },
 
     processData: function () {
@@ -330,8 +333,6 @@ Ext.define('Ext.chart.series.Gauge', {
             renderer: this.getRenderer(),
             fx: {
                 customDuration: {
-                    fillStyle: 0,
-                    strokeStyle: 0,
                     translationX: 0,
                     translationY: 0,
                     rotationCenterX: 0,

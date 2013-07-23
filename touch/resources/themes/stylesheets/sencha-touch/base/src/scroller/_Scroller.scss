@@ -110,7 +110,7 @@
     width: 100%;
 }
 
-.x-scroll-indicator.csstransform {
+.x-scroll-indicator.rounded {
     background: none;
 
     > * {
@@ -183,7 +183,6 @@
 }
 
 // Platform specific code
-
 .x-ios .x-scroll-scroller {
     -webkit-transform: translate3d(0, 0, 0);
 }

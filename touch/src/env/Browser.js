@@ -23,6 +23,7 @@ Ext.define('Ext.env.Browser', {
             dolfin: 'Dolfin',
             webosbrowser: 'webOSBrowser',
             chromeMobile: 'ChromeMobile',
+            chromeiOS: 'ChromeiOS',
             silk: 'Silk',
             other: 'Other'
         },
@@ -48,6 +49,7 @@ Ext.define('Ext.env.Browser', {
             dolfin: 'Dolfin/',
             webosbrowser: 'wOSBrowser/',
             chromeMobile: 'CrMo/',
+            chromeiOS: 'CriOS/',
             silk: 'Silk/'
         }
     },
@@ -180,10 +182,6 @@ Ext.define('Ext.env.Browser', {
          */
         this.userAgent = userAgent;
 
-        is = this.is = function(name) {
-            return is[name] === true;
-        };
-
         var statics = this.statics(),
             browserMatch = userAgent.match(new RegExp('((?:' + Ext.Object.getValues(statics.browserPrefixes).join(')|(?:') + '))([\\w\\._]+)')),
             engineMatch = userAgent.match(new RegExp('((?:' + Ext.Object.getValues(statics.enginePrefixes).join(')|(?:') + '))([\\w\\._]+)')),
@@ -195,6 +193,10 @@ Ext.define('Ext.env.Browser', {
             engineVersion = '',
             isWebView = false,
             is, i, name;
+
+        is = this.is = function(name) {
+            return is[name] === true;
+        };
 
         if (browserMatch) {
             browserName = browserNames[Ext.Object.getKey(statics.browserPrefixes, browserMatch[1])];
@@ -262,9 +264,13 @@ Ext.define('Ext.env.Browser', {
 
         this.setFlag('Standalone', !!navigator.standalone);
 
+        this.setFlag('Ripple', !!document.getElementById("tinyhippos-injected") && !Ext.isEmpty(window.top.ripple));
+        this.setFlag('WebWorks', !!window.blackberry);
+
         if (typeof window.PhoneGap != 'undefined' || typeof window.Cordova != 'undefined' || typeof window.cordova != 'undefined') {
             isWebView = true;
             this.setFlag('PhoneGap');
+            this.setFlag('Cordova');
         }
         else if (!!window.isNK) {
             isWebView = true;
@@ -310,6 +316,19 @@ Ext.define('Ext.env.Browser', {
         }
 
         return name;
+    },
+
+    getPreferredTranslationMethod: function(config) {
+        if (typeof config == 'object' && 'translationMethod' in config && config.translationMethod !== 'auto') {
+            return config.translationMethod;
+        } else {
+            if (this.is.AndroidStock2 || this.is.IE) {
+                return 'scrollposition';
+            }
+            else {
+                return 'csstransform';
+            }
+        }
     }
 
 }, function() {

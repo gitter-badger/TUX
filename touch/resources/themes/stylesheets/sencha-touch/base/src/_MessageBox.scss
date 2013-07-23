@@ -26,6 +26,17 @@
     }
 }
 
+// This will need to be generalized at some point
+.x-ie {
+    .x-msgbox {
+        .x-dock.x-dock-horizontal.x-unsized {
+            > .x-dock-body {
+               @include st-box-flex(1, 0px);
+            }
+        }
+    }
+}
+
 .x-msgbox-text {
     text-align: center;
 }
