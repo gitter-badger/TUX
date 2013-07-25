@@ -19,7 +19,7 @@ http://www.gnu.org/licenses/gpl.html
 The Commercial license is the appropriate option if you are creating proprietary applications and you are
 not prepared to distribute and share the source code of your application under the
 GPL v3 license.
-Please contact us at simacs@andreacammarata.com to ask for more informations.
+Please contact us at info@tux-components.com to ask for more informations.
 
 # Contributors
 
