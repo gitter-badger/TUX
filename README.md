@@ -6,7 +6,7 @@ Professional Touch User Extensions for Sencha Touch 2.
 * [Sencha Cmd 3.1.2](http://www.sencha.com/products/sencha-cmd/download/)
 * [Sencha Touch 2.3.0 Beta](http://sc13-live.sencha.com/touch/touch-2.3.0-beta.zip)
 
-# Getting Starterd
+# Getting Started
 Bofore to run the examples included in the package, there are a couple of steps you need to go through in order to get all the references properly set.
 
 1. Download and install [Sencha Cmd](http://www.sencha.com/products/sencha-cmd/download/).
