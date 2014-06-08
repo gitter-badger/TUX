@@ -4,8 +4,8 @@ Professional Touch User Extensions for Sencha Touch 2.
 # License
 
     TUX package for Sencha Touch 2 - JavaScript Libraries
-	Copyright (c) 2012-2013, SIMACS di Andrea Cammarata
-    simacs@andreacammarata.com 
+	Copyright (c) 2012-2014, SIMACS di Andrea Cammarata
+    andreacammarata84@gmail.com
     IT01839570387
 
     All rights reserved.
@@ -19,7 +19,7 @@ http://www.gnu.org/licenses/gpl.html
 The Commercial license is the appropriate option if you are creating proprietary applications and you are
 not prepared to distribute and share the source code of your application under the
 GPL v3 license.
-Please contact us at info@tux-components.com to ask for more informations.
+Contact us at andreacammarata84@gmail.com to ask for more informations.
 
 # Contributors
 
