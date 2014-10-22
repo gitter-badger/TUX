@@ -1,4 +1,5 @@
 # TUX Component Boundle
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/AndreaCammarata/TUX?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Professional Touch User Extensions for Sencha Touch 2.
 
 # Requirements
